@@ -154,7 +154,7 @@ def processCategoricalColumns(categorical_columns):
 
     # from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-    print(pd.get_dummies(categorical_columns))
+    #print(pd.get_dummies(categorical_columns))
 
 
     # for i in categorical_columns.keys():
