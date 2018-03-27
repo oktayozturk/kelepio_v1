@@ -5,6 +5,11 @@ import numpy as np
 import datetime as dt
 import pandas as pd
 
+class datamanager(object):
+
+    def __init__(self, bike_brand, bike_model):
+        self.bike_brand = bike_brand
+        self.bike_model = bike_model
 
 
 def preprocessData(bike_brand, bike_model, train_test_split_ratio, polynomial_degree=1, categorical_price=False):
