@@ -15,17 +15,16 @@ def preprocessData(bike_brand, bike_model, train_test_split_ratio, polynomial_de
 
         y, y_group, dataset_raw = extractPricesAndCategories(dataset_raw, sensitivity=20, logaritmic=True)
 
-        index = dataset_raw["bike_id"]
-
-        unwanted_categories = ["ad_url", "ad_title", "ad_date"]
-        categorical_columns = dataset_raw.select_dtypes(include=[np.object]).drop(labels=unwanted_categories, axis=1)
+        unwanted_columns = ["ad_url", "ad_title", "ad_date"]
+        categorical_columns = dataset_raw.select_dtypes(include=[np.object]).drop(labels=unwanted_columns, axis=1)
 
         correlations = dataset_raw.corr()["price"].dropna(how="all")
 
         dataset_raw = dataset_raw.loc[:, correlations.keys()]
 
-        x_bool = dataset_raw.select_dtypes(include=[np.bool])
+        index = dataset_raw["bike_id"]
 
+        x_bool = dataset_raw.select_dtypes(include=[np.bool])
 
 
         scalar_columns = dataset_raw.select_dtypes(include=[np.float64, np.float32, np.int]).drop(["price"], axis=1)
@@ -36,21 +35,14 @@ def preprocessData(bike_brand, bike_model, train_test_split_ratio, polynomial_de
 
         x_categorical = processCategoricalColumns(categorical_columns)
 
-
-        #plotGausian(y, bike_brand, bike_model)
-
         X = mergeX(x_scalar, x_categorical, x_bool, index)
 
 
-        #x_pca = applyPCA(X,2)
-
-        #X = x_scalar
-
-
         if categorical_price:
-            x_train, y_train, x_test, y_test = splitDataset(X, y_group, train_test_split_ratio)
+            x_train, y_train, x_test, y_test = splitDataset(np.array(X), y_group, train_test_split_ratio)
         else:
-            x_train, y_train, x_test, y_test = splitDataset(X, y, train_test_split_ratio)
+            x_train, y_train, x_test, y_test = splitDataset(np.array(X), y, train_test_split_ratio)
+
 
         return [x_train, y_train, x_test, y_test]
 
@@ -95,7 +87,6 @@ def extractPricesAndCategories(dataset_raw, sensitivity, logaritmic = True):
     if logaritmic : y = np.log(y)
 
     return [y, y_group, dataset_raw]
-
 
 
 def plotGausian(y, bike_brand, bike_model):
@@ -174,30 +165,18 @@ def processDateColumn(dataset, calculated_columns):
 
 def mergeX(x_scalar, x_categorical, x_bool, index):
 
-
-    column_names = np.concatenate((list(x_scalar.keys()), list(x_categorical.keys()), list(x_bool.keys())),
-                                  axis=0)
+    #column_names = np.concatenate((list(x_scalar.keys()), list(x_categorical.keys()), list(x_bool.keys())),
+    #                              axis=0)
 
     x_scalar = x_scalar.set_index(index)
-
 
     x_categorical = x_categorical.set_index(index)
 
     x_bool = x_bool.set_index(index)
 
-    # print(column_names)
-    # print("------------------------------------------")
-    # print(x_scalar)
-    # print("------------------------------------------")
-    # print(x_categorical)
-    # print("------------------------------------------")
-    # print(x_bool)
-
     X = pd.concat([x_scalar, x_categorical, x_bool], axis=1)
 
     print(X.head())
-
-    #print(X)
 
     return X
 
@@ -205,24 +184,19 @@ def mergeX(x_scalar, x_categorical, x_bool, index):
 def splitDataset(X, y, train_test_split_ratio):
 
 
-    #from sklearn.model_selection import train_test_split
+    from sklearn.model_selection import train_test_split
 
-    #y = y.T
+    print(np.shape(X))
+    print(type(y))
 
 
-    n,m = np.shape(X)
-    train_size = int(round(m * train_test_split_ratio))
+    x_train, x_test, y_train, y_test= train_test_split(X, y.T, test_size=(1-train_test_split_ratio))
 
-    print("Training adeti: %i" % train_size)
-    print("Test adeti: %i" % (m - train_size))
-
-    #x_train, x_test, y_train, y_test= train_test_split(X.T, y.T, test_size=(1-train_test_split_ratio))
-
-    x_train = X[:, 0:train_size]
-    y_train = y[:, 0:train_size]
-
-    x_test = X[:,train_size:]
-    y_test = y[:,train_size:]
+    # x_train = X[:, 0:train_size]
+    # y_train = y[:, 0:train_size]
+    #
+    # x_test = X[:,train_size:]
+    # y_test = y[:,train_size:]
 
 
     return [x_train, y_train, x_test, y_test]
