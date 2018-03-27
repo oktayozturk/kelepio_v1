@@ -7,15 +7,16 @@ import pandas as pd
 
 class datamanager(object):
 
-    def __init__(self, bike_brand, bike_model):
+    def __init__(self, bike_brand, bike_model, polynomial_degree=1):
         import scrapper as sc
 
         self.bike_brand = bike_brand
         self.bike_model = bike_model
+        self.polynomial_degree = polynomial_degree
         self.dataset_raw = sc.FetchBike(self.bike_brand, self.bike_model)
-        self.polynomial_degree = 2
 
         self.clean_dataset, self.deleted_rows = self.clear_dataset_from_extreme_prices()
+
 
         self.index = self.clean_dataset["bike_id"]
 
@@ -32,9 +33,10 @@ class datamanager(object):
         self.bool_columns = self.clean_dataset.select_dtypes(include=[np.bool]).drop(labels=self.unwanted_bool_columns, axis=1).set_index(self.index)
 
 
+        self.x_scalar = self.polynomizeScalarColumns()
+        #self.x_scalar = self.normalizeScalarColumns() # unutma bunu yapmayı
 
-        self.polynomized_scalar_columns = self.polynomizeScalarColumns().set_index(self.index)
-        self.x_scalar = self.normalizeScalarColumns().set_index(self.index) # unutma bunu yapmayı
+
         self.x_categorical = self.processCategoricalColumns().set_index(self.index)
         self.x_bool = self.bool_columns.set_index(self.index)
 
@@ -44,7 +46,6 @@ class datamanager(object):
         #self.correlations = self.X.corr()["price"].dropna(how="all")
 
         #dataset_raw = self.dataset_raw.loc[:, correlations.keys()]
-
 
 
 
@@ -156,8 +157,7 @@ class datamanager(object):
 
     def mergeX(self):
 
-        #column_names = np.concatenate((list(x_scalar.keys()), list(x_categorical.keys()), list(x_bool.keys())),
-        #                              axis=0)
+
 
         self.x_scalar = self.x_scalar.set_index(self.index)
 
@@ -166,7 +166,7 @@ class datamanager(object):
         self.x_bool = self.x_bool.set_index(self.index)
 
 
-        X = pd.concat([self.x_scalar, self.x_categorical, self.x_bool, self.y], axis=1)
+        X = pd.concat([self.x_scalar, self.x_categorical, self.x_bool], axis=1)
 
         return X
 
@@ -178,11 +178,17 @@ class datamanager(object):
 
     def processCategoricalColumns(self):
 
-
         x_categorical = pd.get_dummies(self.categorical_columns)
 
         return x_categorical
 
+
+    def shapes(self):
+
+        print("Clean dataset shape: {}".format(np.shape(self.clean_dataset)))
+        print("X shape: {}".format(np.shape(self.X)))
+        print("y shape: {}".format(np.shape(self.y)))
+        print("y_group shape: {}".format(np.shape(self.y_group)))
 
 
     @staticmethod
