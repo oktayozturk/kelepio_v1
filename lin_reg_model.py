@@ -10,7 +10,7 @@ epsilon = 1e-7
 
 def linear_regression_model(bike_brand, bike_model):
 
-    X_train, Y_train, X_test, Y_test = dm.preprocessData(bike_brand, bike_model, 0.9, polynomial_degree=2)
+    X_train, Y_train, X_test, Y_test = dm.preprocessData(bike_brand, bike_model, 0.9, polynomial_degree=1)
 
 
     tf.reset_default_graph()
@@ -290,7 +290,7 @@ def applyPCA(X, reduction):
 
 
 
-linear_regression_model("honda","cbr 250 r")
+linear_regression_model("ktm","200 duke")
 
 
 

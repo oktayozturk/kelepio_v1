@@ -7,13 +7,15 @@ import pandas as pd
 
 
 
-def preprocessData(bike_brand, bike_model, train_test_split_ratio, polynomial_degree, categorical_price=False):
+def preprocessData(bike_brand, bike_model, train_test_split_ratio, polynomial_degree=1, categorical_price=False):
 
         import scrapper as sc
 
         dataset_raw = sc.FetchBike(bike_brand, bike_model)
 
         y, y_group, dataset_raw = extractPricesAndCategories(dataset_raw, sensitivity=20, logaritmic=True)
+
+        index = dataset_raw["bike_id"]
 
         unwanted_categories = ["ad_url", "ad_title", "ad_date"]
         categorical_columns = dataset_raw.select_dtypes(include=[np.object]).drop(labels=unwanted_categories, axis=1)
@@ -22,22 +24,22 @@ def preprocessData(bike_brand, bike_model, train_test_split_ratio, polynomial_de
 
         dataset_raw = dataset_raw.loc[:, correlations.keys()]
 
-        bool_columns = dataset_raw.select_dtypes(include=[np.bool])
+        x_bool = dataset_raw.select_dtypes(include=[np.bool])
+
+
 
         scalar_columns = dataset_raw.select_dtypes(include=[np.float64, np.float32, np.int]).drop(["price"], axis=1)
         scalar_columns = polynomizeScalarColumns(scalar_columns, polynomial_degree=polynomial_degree)
         # unutma bunu yapmayı
-        scalar_columns = normalizeScalarColumns(scalar_columns)
-
-        column_names = np.concatenate((list(scalar_columns.keys()), list(categorical_columns.keys()), list(bool_columns.keys())), axis=0)
-
-        #plotGausian(y, bike_brand, bike_model)
+        x_scalar = normalizeScalarColumns(scalar_columns)
 
 
         x_categorical = processCategoricalColumns(categorical_columns)
 
 
-        X = mergeX(scalar_columns, x_categorical, bool_columns, column_names)
+        #plotGausian(y, bike_brand, bike_model)
+
+        X = mergeX(x_scalar, x_categorical, x_bool, index)
 
 
         #x_pca = applyPCA(X,2)
@@ -152,22 +154,10 @@ def normalizeScalarColumns(scalar_columns):
 
 def processCategoricalColumns(categorical_columns):
 
-    # from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-    #print(pd.get_dummies(categorical_columns))
+    x_categorical = pd.get_dummies(categorical_columns)
 
-
-    # for i in categorical_columns.keys():
-    #     print("Unique values for {} : {}".format(i, len(categorical_columns[i].unique())))
-    #     le = LabelEncoder()
-    #     col = categorical_columns[i]
-    #     le.fit(col)
-    #     categorical_columns[i] = le.transform(col)
-    #
-    # r = OneHotEncoder(categorical_features="all", sparse=False)
-    # x_categorical = r.fit_transform(categorical_columns)
-
-    return categorical_columns #x_categorical.T
+    return x_categorical
 
 
 def processDateColumn(dataset, calculated_columns):
@@ -182,17 +172,32 @@ def processDateColumn(dataset, calculated_columns):
 
 
 
-def mergeX(x_scalar, x_categorical, bool_columns, column_names):
+def mergeX(x_scalar, x_categorical, x_bool, index):
 
 
-    X = np.concatenate((x_scalar, x_categorical, bool_columns.T), axis=0)
+    column_names = np.concatenate((list(x_scalar.keys()), list(x_categorical.keys()), list(x_bool.keys())),
+                                  axis=0)
 
-    print(np.shape(X.T))
-    print(np.shape(column_names))
+    x_scalar = x_scalar.set_index(index)
 
 
-    X_df = pd.DataFrame(X.T, index=None, columns=column_names)
+    x_categorical = x_categorical.set_index(index)
 
+    x_bool = x_bool.set_index(index)
+
+    # print(column_names)
+    # print("------------------------------------------")
+    # print(x_scalar)
+    # print("------------------------------------------")
+    # print(x_categorical)
+    # print("------------------------------------------")
+    # print(x_bool)
+
+    X = pd.concat([x_scalar, x_categorical, x_bool], axis=1)
+
+    print(X.head())
+
+    #print(X)
 
     return X
 
@@ -360,3 +365,5 @@ def drawKMeans(points_values, assignment_values, centroid_values):
 
     plt.show()
 
+
+X_train, Y_train, X_test, Y_test = preprocessData("honda", "cbf 150", 0.9, polynomial_degree=1)
