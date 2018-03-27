@@ -84,7 +84,7 @@ class datamanager(object):
 
         price_gap = (max_value - min_value) / number_of_price_groups
 
-        y = np.array(self.clean_dataset["price"]).reshape([1,len(self.clean_dataset)])
+        y = self.clean_dataset["price"]
 
         y_group = np.round((y - min_value) / price_gap)
 
@@ -165,7 +165,6 @@ class datamanager(object):
 
         self.x_bool = self.x_bool.set_index(self.index)
 
-        self.y = self.y.set_index(self.index)
 
         X = pd.concat([self.x_scalar, self.x_categorical, self.x_bool, self.y], axis=1)
 
