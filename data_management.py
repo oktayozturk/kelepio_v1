@@ -13,65 +13,39 @@ class datamanager(object):
         self.bike_brand = bike_brand
         self.bike_model = bike_model
         self.dataset_raw = sc.FetchBike(self.bike_brand, self.bike_model)
-        self.polynomial_degree = 1
-
-        self.index = self.dataset_raw["bike_id"]
+        self.polynomial_degree = 2
 
         self.clean_dataset, self.deleted_rows = self.clear_dataset_from_extreme_prices()
+
+        self.index = self.clean_dataset["bike_id"]
 
         self.y, self.y_group =  self.extract_prices_and_price_categories( number_of_price_groups=20, logaritmic=False)
 
 
-        # self.unwanted_columns = ["ad_url", "ad_title", "ad_date"]
-        # self.categorical_columns = self.clean_dataset.select_dtypes(include=[np.object]).drop(labels=self.unwanted_columns, axis=1, index=self.index)
-        # self.scalar_columns = self.clean_dataset.select_dtypes(include=[np.float64, np.float32, np.int]).drop(["price"], axis=1, index=self.index)
-        # self.bool_columns = self.clean_dataset.select_dtypes(include=[np.bool], index=self.index)
-        #
-        # self.polynomized_scalar_columns = self.polynomizeScalarColumns()
-        #
-        # self.x_scalar = self.normalizeScalarColumns() # unutma bunu yapmayı
-        #
-        # self.x_categorical = self.processCategoricalColumns()
-        #
-        # self.x_bool = self.bool_columns
-        #
-        # self.X = self.mergeX()
+        self.unwanted_categorical_columns = ["ad_url", "ad_title", "ad_date"]
+        self.categorical_columns = self.clean_dataset.select_dtypes(include=[np.object]).drop(labels=self.unwanted_categorical_columns, axis=1).set_index(self.index)
+
+        self.unwanted_scalar_columns = ["price", "bike_id"]
+        self.scalar_columns = self.clean_dataset.select_dtypes(include=[np.float64, np.float32, np.int]).drop(labels=self.unwanted_scalar_columns, axis=1).set_index(self.index)
+
+        self.unwanted_bool_columns = []
+        self.bool_columns = self.clean_dataset.select_dtypes(include=[np.bool]).drop(labels=self.unwanted_bool_columns, axis=1).set_index(self.index)
 
 
-    def preprocessData(self, train_test_split_ratio, categorical_price=False):
+
+        self.polynomized_scalar_columns = self.polynomizeScalarColumns().set_index(self.index)
+        self.x_scalar = self.normalizeScalarColumns().set_index(self.index) # unutma bunu yapmayı
+        self.x_categorical = self.processCategoricalColumns().set_index(self.index)
+        self.x_bool = self.bool_columns.set_index(self.index)
 
 
-            #self.y, self.y_group, dataset_raw = extractPricesAndCategories(self.dataset_raw, sensitivity=20, logaritmic=True)
+        self.X = self.mergeX()
 
-            #categorical_columns = dataset_raw.select_dtypes(include=[np.object]).drop(labels=self.unwanted_columns, axis=1)
+        #self.correlations = self.X.corr()["price"].dropna(how="all")
 
-            correlations = self.dataset_raw.corr()["price"].dropna(how="all")
-
-            dataset_raw = self.dataset_raw.loc[:, correlations.keys()]
-
-            #index = dataset_raw["bike_id"]
-
-            #x_bool = dataset_raw.select_dtypes(include=[np.bool])
+        #dataset_raw = self.dataset_raw.loc[:, correlations.keys()]
 
 
-            #scalar_columns = dataset_raw.select_dtypes(include=[np.float64, np.float32, np.int]).drop(["price"], axis=1)
-            #scalar_columns = polynomizeScalarColumns(self.scalar_columns, polynomial_degree=self.polynomial_degree)
-            # unutma bunu yapmayı
-            #x_scalar = normalizeScalarColumns(self.scalar_columns)
-
-
-            x_categorical = processCategoricalColumns(self.categorical_columns)
-
-            X = mergeX(x_scalar, x_categorical, x_bool, index)
-
-
-            if categorical_price:
-                x_train, y_train, x_test, y_test = splitDataset(np.array(X), y_group, train_test_split_ratio)
-            else:
-                x_train, y_train, x_test, y_test = splitDataset(np.array(X), y, train_test_split_ratio)
-
-
-            return [x_train, y_train, x_test, y_test]
 
 
     def clear_dataset_from_extreme_prices(self):
@@ -119,6 +93,16 @@ class datamanager(object):
         return [y, y_group]
 
 
+    def splitDataset(self, train_test_split_ratio):
+
+        from sklearn.model_selection import train_test_split
+
+        x_train, x_test, y_train, y_test= train_test_split(self.X, self.y.T, test_size=(1-train_test_split_ratio))
+
+
+        return [x_train, y_train, x_test, y_test]
+
+
     def plotGausian(self):
 
         import matplotlib.pyplot as plt
@@ -159,11 +143,13 @@ class datamanager(object):
 
         x_scalar = poly.fit_transform(self.scalar_columns)
 
+
         target_feature_names = ['x'.join(['{}^{}'.format(pair[0], pair[1]) for pair in tuple if pair[1] != 0]) for tuple in
-                                [zip(scalar_columns.columns, p) for p in poly.powers_]]
+                                [zip(self.scalar_columns.columns, p) for p in poly.powers_]]
 
         output_df = pd.DataFrame(x_scalar, columns=target_feature_names)
         output_df = output_df.drop(output_df.columns[0], axis=1)
+
 
         return output_df
 
@@ -179,7 +165,9 @@ class datamanager(object):
 
         self.x_bool = self.x_bool.set_index(self.index)
 
-        X = pd.concat([self.x_scalar, self.x_categorical, self.x_bool], axis=1)
+        self.y = self.y.set_index(self.index)
+
+        X = pd.concat([self.x_scalar, self.x_categorical, self.x_bool, self.y], axis=1)
 
         return X
 
@@ -214,27 +202,6 @@ class datamanager(object):
 
         return x_calculated.T
 
-
-    @staticmethod
-    def splitDataset(X, y, train_test_split_ratio):
-
-
-        from sklearn.model_selection import train_test_split
-
-        print(np.shape(X))
-        print(type(y))
-
-
-        x_train, x_test, y_train, y_test= train_test_split(X, y.T, test_size=(1-train_test_split_ratio))
-
-        # x_train = X[:, 0:train_size]
-        # y_train = y[:, 0:train_size]
-        #
-        # x_test = X[:,train_size:]
-        # y_test = y[:,train_size:]
-
-
-        return [x_train, y_train, x_test, y_test]
 
     @staticmethod
     def find_Distances(x, centroids):
