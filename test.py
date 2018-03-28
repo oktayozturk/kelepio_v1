@@ -13,10 +13,9 @@ b = dm("bmw","f 650 gs", polynomial_degree=1)
 b.clear_uncorrelated_fields()
 
 
-
 X_train, Y_train, X_test, Y_test = b.splitDataset(0.9)
 
-print(X_train.T.dtypes)
+
 
 
 

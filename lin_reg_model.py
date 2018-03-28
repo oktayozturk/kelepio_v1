@@ -10,8 +10,9 @@ np.set_printoptions(suppress=True, precision=8, linewidth=150, threshold=10000)
 epsilon = 1e-7
 
 def linear_regression_model(bike_brand, bike_model):
+    b = dm("bmw", "f 650 gs", polynomial_degree=1)
 
-    b = dm(bike_brand, bike_model, polynomial_degree=1)
+    b.clear_uncorrelated_fields()
 
     X_train, Y_train, X_test, Y_test = b.splitDataset(0.9)
 
@@ -25,7 +26,7 @@ def linear_regression_model(bike_brand, bike_model):
     number_of_output = np.shape(Y_test)[0]
 
     layers_dims = [n_train, 40, 30, number_of_output]
-    epochs = 1000
+    epochs = 10000
     batch_size = 64
     batches = int(np.ceil(m_train / batch_size))
     alpha = 0.001
