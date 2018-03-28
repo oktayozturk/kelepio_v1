@@ -5,7 +5,9 @@ import numpy as np
 import datetime as dt
 import pandas as pd
 
-class datamanager(object):
+class datamanager:
+
+    number_of_price_groups = 20
 
     def __init__(self, bike_brand, bike_model, polynomial_degree=1):
         import scrapper as sc
@@ -17,10 +19,9 @@ class datamanager(object):
 
         self.clean_dataset, self.deleted_rows = self.clear_dataset_from_extreme_prices()
 
-
         self.index = self.clean_dataset["bike_id"]
 
-        self.y, self.y_group =  self.extract_prices_and_price_categories( number_of_price_groups=20, logaritmic=False)
+        self.y, self.y_group =  self.extract_prices_and_price_categories(number_of_price_groups=self.number_of_price_groups, logaritmic=False)
 
 
         self.unwanted_categorical_columns = ["ad_url", "ad_title", "ad_date"]
@@ -33,16 +34,17 @@ class datamanager(object):
         self.bool_columns = self.clean_dataset.select_dtypes(include=[np.bool]).drop(labels=self.unwanted_bool_columns, axis=1).set_index(self.index)
 
 
+        self.x_categorical = self.processCategoricalColumns().set_index(self.index)
+        self.x_bool = self.bool_columns.set_index(self.index)
         self.x_scalar = self.polynomizeScalarColumns()
         #self.x_scalar = self.normalizeScalarColumns() # unutma bunu yapmayı
 
 
-        self.x_categorical = self.processCategoricalColumns().set_index(self.index)
-        self.x_bool = self.bool_columns.set_index(self.index)
-
-
         self.X = self.mergeX()
 
+
+    def __str__(self):
+        return "Dataset for Brand: {} and Model: {}".format(self.bike_brand, self.bike_model)
 
     def applyPCA(self, reduction):
 
@@ -146,10 +148,10 @@ class datamanager(object):
 
         from sklearn.model_selection import train_test_split
 
-        x_train, x_test, y_train, y_test= train_test_split(self.X, self.y.T, test_size=(1-train_test_split_ratio))
+        x_train, x_test, y_train, y_test= train_test_split(self.X.drop(["price"], axis=1), self.y, test_size=(1-train_test_split_ratio))
 
 
-        return [x_train, y_train, x_test, y_test]
+        return [x_train.T, y_train.T, x_test.T, y_test.T]
 
 
     def plotGausian(self):
@@ -225,7 +227,8 @@ class datamanager(object):
 
     def processCategoricalColumns(self):
 
-        x_categorical = pd.get_dummies(self.categorical_columns)
+        x_categorical = pd.get_dummies(self.categorical_columns).astype(np.bool)
+
 
         return x_categorical
 
@@ -242,6 +245,7 @@ class datamanager(object):
     def writeCSV(dataset, file_name):
 
         np.savetxt("test_outputs/{}.csv".format(file_name), X=dataset, delimiter=",")
+
 
     @staticmethod
     def processDateColumn(dataset, calculated_columns):

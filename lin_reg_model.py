@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/python
 
-import data_management as dm
+
 import numpy as np
 import tensorflow as tf
+from data_management import datamanager as dm
 
 np.set_printoptions(suppress=True, precision=8, linewidth=150, threshold=10000)
 epsilon = 1e-7
 
 def linear_regression_model(bike_brand, bike_model):
 
-    X_train, Y_train, X_test, Y_test = dm.preprocessData(bike_brand, bike_model, 0.9, polynomial_degree=1)
+    b = dm(bike_brand, bike_model, polynomial_degree=1)
+
+    X_train, Y_train, X_test, Y_test = b.splitDataset(0.9)
 
 
     tf.reset_default_graph()
@@ -118,21 +121,21 @@ def mergeCV(x_test, y_test, y_preds):
     dm.writeCSV(np.concatenate((x_test, y_test, y_preds), axis=0))
 
 
-def getNextBatch(X_train, Y_train, j, batch_size):
+def getNextBatch(X, Y, j, batch_size):
 
     #if batch_size > np.size(Y_train, axis=1) : batch_size = np.size(Y_train, axis=1)
 
     if j == 0:
-        x = X_train[:, 0:batch_size ]
-        y = Y_train[:, 0:batch_size]
+        x = X.iloc[:, 0:batch_size ]
+        y = Y.iloc[:, 0:batch_size]
 
-    elif (j * batch_size) < len(X_train[0]):
-        x = X_train[:, (j*batch_size):((j+1)*(batch_size))]
-        y = Y_train[:, (j*batch_size):((j+1)*(batch_size))]
+    elif (j * batch_size) < len(X):
+        x = X.iloc[:, (j*batch_size):((j+1)*(batch_size))]
+        y = Y.iloc[:, (j*batch_size):((j+1)*(batch_size))]
 
     else:
-        x = X_train[:, (j * batch_size):]
-        y = Y_train[:, (j * batch_size):]
+        x = X.iloc[:, (j * batch_size):]
+        y = Y.iloc[:, (j * batch_size):]
 
 
     return [x,y]
