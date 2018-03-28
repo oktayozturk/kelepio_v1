@@ -13,6 +13,5 @@ b = dm("bmw","f 650 gs", polynomial_degree=1)
 
 b.clear_uncorrelated_fields()
 
-print(b.X.head())
+print(b.applyPCA(2))
 
-print(b.uncorrs)

@@ -44,7 +44,50 @@ class datamanager(object):
         self.X = self.mergeX()
 
 
+    def applyPCA(self, reduction):
 
+
+        n,m = np.shape(self.X)
+
+        # calculate means vector to calculate scatter matrix
+        means_vector = np.zeros([n,1])
+
+        for i in range(n):
+            means_vector[i,:] = np.mean(self.X.iloc[i,:])
+
+        #calculate scatter matrix to calculate eigen vector and eigen values
+        scatter_matrix = np.zeros([n,n])
+
+        for i in range(m):
+            scatter_matrix = scatter_matrix + np.dot((self.X.iloc[:,i].values.reshape(n,1) - means_vector), (self.X.iloc[:,i].values.reshape(n,1) - means_vector).T)
+
+        #calculate eigen vector and eigen values
+        eigen_values, eigen_vectors = np.linalg.eig(np.array(scatter_matrix, dtype=float))
+
+        #testing OUTPUT values
+        # for i in range(len(eigen_values)):
+        #
+        #     eigv = eigen_vectors[:, i].reshape(1, n).T
+        #     np.testing.assert_array_almost_equal(scatter_matrix.dot(eigv), eigen_values[i] * eigv,
+        #                                          decimal=6, err_msg='', verbose=True)
+        #
+        # for ev in eigen_vectors:
+        #     np.testing.assert_array_almost_equal(1.0, np.linalg.norm(ev))
+
+        # Make a list of (eigenvalue, eigenvector) tuples
+        eig_pairs = [(np.abs(eigen_values[i]), np.abs(eigen_vectors[:, i])) for i in range(len(eigen_values))]
+
+        # Sort the (eigenvalue, eigenvector) tuples from high to low
+        eig_pairs.sort(key=lambda x: x[0], reverse=True)
+
+        # Building PCA matrix
+        pca_matrix = []
+        for i in range(reduction):
+            pca_matrix.append(eig_pairs[i][1].reshape(n, 1))
+
+        w = np.hstack(tuple(pca_matrix))
+
+        return w.T.dot(self.X)
 
 
     def clear_dataset_from_extreme_prices(self):
@@ -82,7 +125,6 @@ class datamanager(object):
         self.corrs = self.X.corr()["price"].dropna(how="all")
         self.uncorrs = self.X.corr()["price"].isna().loc[lambda b: b == True]
         self.X = self.X.drop(labels=list(self.uncorrs.index), axis=1)
-
 
 
     def extract_prices_and_price_categories(self, number_of_price_groups, logaritmic = True):
@@ -225,51 +267,6 @@ class datamanager(object):
 
         return distances
 
-    @staticmethod
-    def applyPCA(X, reduction):
-
-
-        n,m = np.shape(X)
-
-        # calculate means vector to calculate scatter matrix
-        means_vector = np.zeros([n,1])
-
-        for i in range(n):
-            means_vector[i,:] = np.mean(X[i,:])
-
-        #calculate scatter matrix to calculate eigen vector and eigen values
-        scatter_matrix = np.zeros([n,n])
-
-        for i in range(m):
-            scatter_matrix = scatter_matrix + np.dot((X[:,i].reshape(n,1) - means_vector), (X[:,i].reshape(n,1) - means_vector).T)
-
-        #calculate eigen vector and eigen values
-        eigen_values, eigen_vectors = np.linalg.eig(np.array(scatter_matrix, dtype=float))
-
-        #testing OUTPUT values
-        # for i in range(len(eigen_values)):
-        #
-        #     eigv = eigen_vectors[:, i].reshape(1, n).T
-        #     np.testing.assert_array_almost_equal(scatter_matrix.dot(eigv), eigen_values[i] * eigv,
-        #                                          decimal=6, err_msg='', verbose=True)
-        #
-        # for ev in eigen_vectors:
-        #     np.testing.assert_array_almost_equal(1.0, np.linalg.norm(ev))
-
-        # Make a list of (eigenvalue, eigenvector) tuples
-        eig_pairs = [(np.abs(eigen_values[i]), np.abs(eigen_vectors[:, i])) for i in range(len(eigen_values))]
-
-        # Sort the (eigenvalue, eigenvector) tuples from high to low
-        eig_pairs.sort(key=lambda x: x[0], reverse=True)
-
-        # Building PCA matrix
-        pca_matrix = []
-        for i in range(reduction):
-            pca_matrix.append(eig_pairs[i][1].reshape(n, 1))
-
-        w = np.hstack(tuple(pca_matrix))
-
-        return w.T.dot(X)
 
     @staticmethod
     def applyKMeans(X, number_of_clusters):
