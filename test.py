@@ -8,6 +8,11 @@ import numpy as np
 from data_management import datamanager as dm
 
 
-b = dm("ktm","200 duke", polynomial_degree=1)
+b = dm("bmw","f 650 gs", polynomial_degree=1)
 
-print(b.X.corr()["price"])
+
+b.clear_uncorrelated_fields()
+
+print(b.X.head())
+
+print(b.uncorrs)

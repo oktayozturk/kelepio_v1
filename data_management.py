@@ -43,9 +43,7 @@ class datamanager(object):
 
         self.X = self.mergeX()
 
-        #self.correlations = self.X.corr()["price"].dropna(how="all")
 
-        #dataset_raw = self.dataset_raw.loc[:, correlations.keys()]
 
 
 
@@ -77,6 +75,14 @@ class datamanager(object):
 
 
         return [clean_dataset, deleted_rows]
+
+
+    def clear_uncorrelated_fields(self):
+
+        self.corrs = self.X.corr()["price"].dropna(how="all")
+        self.uncorrs = self.X.corr()["price"].isna().loc[lambda b: b == True]
+        self.X = self.X.drop(labels=list(self.uncorrs.index), axis=1)
+
 
 
     def extract_prices_and_price_categories(self, number_of_price_groups, logaritmic = True):
