@@ -85,11 +85,11 @@ class datamanager(object):
 
         price_gap = (max_value - min_value) / number_of_price_groups
 
-        y = self.clean_dataset["price"]
+        y = self.clean_dataset["price"].to_frame().set_index(self.index)
 
-        y_group = np.round((y - min_value) / price_gap)
+        y_group = np.round((y["price"] - min_value) / price_gap)
 
-        if logaritmic : y = np.log(y)
+        if logaritmic : y["price"] = np.log(y["price"])
 
         return [y, y_group]
 
@@ -158,7 +158,6 @@ class datamanager(object):
     def mergeX(self):
 
 
-
         self.x_scalar = self.x_scalar.set_index(self.index)
 
         self.x_categorical = self.x_categorical.set_index(self.index)
@@ -166,7 +165,7 @@ class datamanager(object):
         self.x_bool = self.x_bool.set_index(self.index)
 
 
-        X = pd.concat([self.x_scalar, self.x_categorical, self.x_bool], axis=1)
+        X = pd.concat([self.x_scalar, self.x_categorical, self.x_bool, self.y], axis=1)
 
         return X
 
@@ -277,11 +276,6 @@ class datamanager(object):
         d, i = knn.kneighbors(X.T)
 
         print(np.shape(i))
-
-        # print(np.shape(d.T))
-        #
-        # for i in range(len(d)):
-        #     print(d.T[:,i])
 
 
         return 0

@@ -8,6 +8,6 @@ import numpy as np
 from data_management import datamanager as dm
 
 
-b = dm("bmw","f 650 gs", polynomial_degree=1)
+b = dm("ktm","200 duke", polynomial_degree=1)
 
-b.shapes()
+print(b.X.corr()["price"])
