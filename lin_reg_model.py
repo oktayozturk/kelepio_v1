@@ -12,6 +12,12 @@ np.set_printoptions(suppress=True, precision=8, linewidth=150, threshold=10000)
 class linear_regression_model(object):
 
     epsilon = 1e-7
+    epochs = 5000
+    batch_size = 64
+    dropout_threshold = 0.5
+    alpha = 0.001
+    beta = 0.1
+
 
     def __init__(self, bike_brand, bike_model):
 
@@ -28,14 +34,8 @@ class linear_regression_model(object):
         self.n_train, self.m_train = np.shape(self.X_train)
         self.n_test, self.m_test = np.shape(self.X_test)
         self.number_of_output = np.shape(self.Y_test)[0]
-
         self.layers_dims = [self.n_train, 40, 30, self.number_of_output]
-        self.epochs = 10000
-        self.batch_size = 64
         self.batches = int(np.ceil(self.m_train / self.batch_size))
-        self.alpha = 0.001
-        self.beta = 0.1
-        self.dropout_threshold = 0.5
         self.logs_path = "Tensor_logs/"
         self.sample_size = self.m_train
 
@@ -43,9 +43,9 @@ class linear_regression_model(object):
     #------------------------- PREDICTIVE MODEL -------------------------------------
 
 
-        self.X = tf.placeholder(dtype=tf.float32, shape=[n_train,None], name="X")
+        self.X = tf.placeholder(dtype=tf.float32, shape=[self.n_train,None], name="X")
 
-        self.Y = tf.placeholder(dtype=tf.float32, shape=[number_of_output, None], name="Y")
+        self.Y = tf.placeholder(dtype=tf.float32, shape=[self.number_of_output, None], name="Y")
 
         self.parameters = self.initWeights()
 
@@ -177,16 +177,16 @@ class linear_regression_model(object):
         #if batch_size > np.size(Y_train, axis=1) : batch_size = np.size(Y_train, axis=1)
 
         if j == 0:
-            x = self.X.iloc[:, 0:self.batch_size ]
-            y = self.Y.iloc[:, 0:self.batch_size]
+            x = self.X_train.iloc[:, 0:self.batch_size ]
+            y = self.Y_train.iloc[:, 0:self.batch_size]
 
         elif (j * self.batch_size) < len(self.X):
-            x = self.X.iloc[:, (j*self.batch_size):((j+1)*(self.batch_size))]
-            y = self.Y.iloc[:, (j*self.batch_size):((j+1)*(self.batch_size))]
+            x = self.X_train.iloc[:, (j*self.batch_size):((j+1)*(self.batch_size))]
+            y = self.Y_train.iloc[:, (j*self.batch_size):((j+1)*(self.batch_size))]
 
         else:
-            x = self.X.iloc[:, (j * self.batch_size):]
-            y = self.Y.iloc[:, (j * self.batch_size):]
+            x = self.X_train.iloc[:, (j * self.batch_size):]
+            y = self.Y_train.iloc[:, (j * self.batch_size):]
 
 
         return [x,y]

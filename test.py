@@ -6,28 +6,9 @@ import scrapper as sc
 import matplotlib.pyplot as plt
 import numpy as np
 from data_management import datamanager as dm
+from lin_reg_model import linear_regression_model as lr
 
 
-b = dm("bmw","f 650 gs", polynomial_degree=1)
+model = lr("bmw", "f 650 gs")
 
-b.clear_uncorrelated_fields()
-
-
-X_train, Y_train, X_test, Y_test = b.splitDataset(0.9)
-
-
-
-
-
-print(type(X_train))
-print(type(X_test))
-print(type(Y_train))
-print(type(Y_test))
-
-
-print(np.shape(X_train))
-print(np.shape(X_test))
-print(np.shape(Y_train))
-print(np.shape(Y_test))
-
-
+model.train()
