@@ -11,6 +11,8 @@ np.set_printoptions(suppress=True, precision=8, linewidth=150, threshold=10000)
 
 class linear_regression_model(object):
 
+    # ----------------------- HyperParameters -----------------------------------------------
+
     epsilon = 1e-7
     epochs = 10000
     batch_size = 64
@@ -21,59 +23,76 @@ class linear_regression_model(object):
 
     def __init__(self, bike_brand, bike_model):
 
+        # ----------------------- Data Gathering -----------------------------------------------
         self.bike_data_manager = dm(bike_brand, bike_model, polynomial_degree=1)
-
         self.bike_data_manager.clear_uncorrelated_fields()
-
-        tf.reset_default_graph()
-
         self.X_train, self.Y_train, self.X_test, self.Y_test = self.bike_data_manager.splitDataset(0.9)
 
-        #----------------------- HyperParameters -----------------------------------------------
+
+        #----------------------- Model Parameters -----------------------------------------------
 
         self.n_train, self.m_train = np.shape(self.X_train)
         self.n_test, self.m_test = np.shape(self.X_test)
         self.number_of_output = np.shape(self.Y_test)[0]
         self.layers_dims = [self.n_train, 40, 30, self.number_of_output]
         self.batches = int(np.ceil(self.m_train / self.batch_size))
-        self.logs_path = "Tensor_logs/"
         self.sample_size = self.m_train
 
 
-    #------------------------- PREDICTIVE MODEL -------------------------------------
+        #-------------------------  MODEL GRAPH -------------------------------------
+        with tf.name_scope("Variables"):
+
+            self.X = tf.placeholder(dtype=tf.float32, shape=[self.n_train,None], name="X")
+
+            self.Y = tf.placeholder(dtype=tf.float32, shape=[self.number_of_output, None], name="Y")
+
+            self.parameters = self.initWeights()
+
+        with tf.name_scope("Feed_forward"):
+            self.Y_ = self.feedForward()
+
+        with tf.name_scope("Cost_computation"):
+            self.dryLoss = self.computeUnregularizedLoss()
+
+            self.regularisation = self.compute_L2_regularization()
+
+            self.cost = tf.reduce_mean(self.dryLoss + self.regularisation)
+
+        with tf.name_scope("Optimization"):
+
+            self.optimizer = tf.train.AdamOptimizer(self.alpha)
+
+            self.train_op = self.optimizer.minimize(self.cost, name="Training_OP")
+
+            self.training_costs = []
+
+            self.test_costs = []
 
 
-        self.X = tf.placeholder(dtype=tf.float32, shape=[self.n_train,None], name="X")
 
-        self.Y = tf.placeholder(dtype=tf.float32, shape=[self.number_of_output, None], name="Y")
+            # ----------------------- Tensorflow  Configs-----------------------------------------------
+            tf.summary.scalar("Cost", self.cost)
+            #tf.summary.scalar("W1", self.parameters["W1"].value())
 
-        self.parameters = self.initWeights()
+            self.initializer = tf.global_variables_initializer()
 
-        self.Y_ = self.feedForward()
+            #tf.reset_default_graph()
 
-        self.dryLoss = self.computeUnregularizedLoss()
+            self.summary_op = tf.summary.merge_all()
 
-        self.regularisation = self.compute_L2_regularization()
+            self.tensor_logs_path = "./Tensor_logs/"
+            self.tf_writer = tf.summary.FileWriter(self.tensor_logs_path, graph=tf.get_default_graph())
 
-        self.cost = tf.reduce_mean(self.dryLoss + self.regularisation)
-
-        self.optimizer = tf.train.AdamOptimizer(self.alpha)
-
-        self.train_op = self.optimizer.minimize(self.cost, name="Training_OP")
-
-        self.initializer = tf.global_variables_initializer()
-
-        self.training_costs = []
-
-        self.test_costs = []
+            self.tensor_save_path = "./Tensor_models/"
+            self.tf_saver = tf.train.Saver()
 
 
-
-    def train(self):
+    def train(self, verbose=True, save=False):
 
         with tf.Session() as sess:
 
             sess.run(self.initializer)
+
 
             # ------------------------------ TRAINING SET ----------------------------------
             training_costs = []
@@ -84,23 +103,28 @@ class linear_regression_model(object):
 
                     x_batch, y_batch = self.getNextBatch("train", j, self.batch_size)
                     train_data = {self.X: x_batch, self.Y:y_batch}
-                    _, c = sess.run([self.train_op, self.cost], feed_dict=train_data)
+                    _, c, summary = sess.run([self.train_op, self.cost, self.summary_op], feed_dict=train_data)
 
 
                 if i % 100 == 0:
+                    self.tf_writer.add_summary(summary)
                     self.training_costs.append(c)
                     self.decreaseAlpha(i)
-                    print("Cost after {} epochs: {}".format(i,c))
+                    if verbose: print("Cost after {} epochs: {}".format(i,c))
 
+            if save: self.tf_saver.save(sess, self.tensor_save_path + "model.ckpt")
 
 
     def test(self):
 
         with tf.Session() as sess:
-            sess.run(self.initializer)
+
+            try:
+                self.tf_saver.restore(sess, self.tensor_save_path + "model.ckpt")
+            except:
+                sess.run(self.initializer)
+
         #------------------------------------ TEST SET ----------------------------------
-
-
             for i in range(self.m_test):
                 x_batch, y_batch = self.getNextBatch("test", i, 1)
                 test_data = {self.X: x_batch, self.Y: y_batch}
