@@ -49,9 +49,11 @@ class linear_regression_model(object):
             self.parameters = self.initWeights()
 
         with tf.name_scope("Feed_forward"):
+
             self.Y_ = self.feedForward()
 
         with tf.name_scope("Cost_computation"):
+
             self.dryLoss = self.computeUnregularizedLoss()
 
             self.regularisation = self.compute_L2_regularization()
@@ -125,12 +127,15 @@ class linear_regression_model(object):
                 sess.run(self.initializer)
 
         #------------------------------------ TEST SET ----------------------------------
-            for i in range(self.m_test):
-                x_batch, y_batch = self.getNextBatch("test", i, 1)
-                test_data = {self.X: x_batch, self.Y: y_batch}
+            #for i in range(self.m_test):
+            x_batch, y_batch = self.getNextBatch("test", 0, self.batch_size)
+            test_data = {self.X: x_batch, self.Y: y_batch}
 
-                c = sess.run(self.cost, feed_dict=test_data)
-                self.test_costs.append(c)
+            c = sess.run(self.cost, feed_dict=test_data)
+
+            print(sess.run(self.Y_, feed_dict=test_data))
+
+            self.test_costs.append(c)
 
 
 
@@ -170,7 +175,7 @@ class linear_regression_model(object):
 
     def computeUnregularizedLoss(self):
 
-        return tf.losses.mean_squared_error(labels=self.Y, predictions=self.Y_)
+        return tf.sqrt(tf.losses.mean_squared_error(labels=self.Y, predictions=self.Y_))
 
 
     def compute_L2_regularization(self):
