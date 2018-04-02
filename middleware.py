@@ -20,7 +20,6 @@ model.epochs = 1000
 model.dropout_threshold = 0.7
 
 
-
 model.train(verbose=True, save=True)
 
 model.test(show_prices=True)
