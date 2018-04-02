@@ -16,7 +16,7 @@ model = lr("bajaj", "pulsar ns 200")
 
 
 model.alpha = 0.03
-model.epochs = 35000
+model.epochs = 1000
 model.dropout_threshold = 0.7
 
 

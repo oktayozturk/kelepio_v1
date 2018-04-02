@@ -166,8 +166,14 @@ class linear_regression_model(object):
 
     def build_Path(self, path):
 
+        import os
+        fullpath = str(path + self.brand + "/" + self.model + "/")
+        print(fullpath)
+        if not os.path.exists(fullpath):
+            os.makedirs(fullpath)
 
-        return path
+        return fullpath
+
 
     def feedForward(self):
 
