@@ -16,7 +16,7 @@ model = lr("bmw", "r 1200 gs")
 
 
 model.alpha = 0.01
-model.epochs = 80000
+model.epochs = 1000
 
 model.train(verbose=True, save=True)
 

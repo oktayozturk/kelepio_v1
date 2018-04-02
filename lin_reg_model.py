@@ -21,6 +21,7 @@ class linear_regression_model(object):
     beta = 0.1
 
 
+
     def __init__(self, bike_brand, bike_model):
 
         # ----------------------- Data Gathering -----------------------------------------------
@@ -43,9 +44,7 @@ class linear_regression_model(object):
         with tf.name_scope("Variables"):
 
             self.X = tf.placeholder(dtype=tf.float32, shape=[self.n_train,None], name="X")
-
             self.Y = tf.placeholder(dtype=tf.float32, shape=[self.number_of_output, None], name="Y")
-
             self.parameters = self.initWeights()
 
         with tf.name_scope("Feed_forward"):
@@ -55,49 +54,46 @@ class linear_regression_model(object):
         with tf.name_scope("Cost_computation"):
 
             self.dryLoss = self.computeUnregularizedLoss()
-
             self.regularisation = self.compute_L2_regularization()
-
             self.cost = tf.reduce_mean(self.dryLoss + self.regularisation)
 
         with tf.name_scope("Optimization"):
 
             self.optimizer = tf.train.AdamOptimizer(self.alpha)
-
             self.train_op = self.optimizer.minimize(self.cost, name="Training_OP")
-
             self.training_costs = []
-
             self.test_costs = []
 
+        with tf.name_scope("Metrics"):
+
+            self.total_error = tf.reduce_sum(tf.square(tf.subtract(self.Y, tf.reduce_mean(self.Y))))
+            self.unexplained_error = tf.reduce_sum(tf.square(tf.subtract(self.Y, self.Y_)))
+            self.r_squared_score = tf.subtract(1., tf.div(self.unexplained_error, self.total_error))
+
+        # ----------------------- Tensorflow  Logs and Configs-----------------------------------------------
+        tf.summary.scalar("Cost", self.cost)
+        #tf.summary.scalar("W1", self.parameters["W1"].value())
+
+        self.initializer = tf.global_variables_initializer()
+
+        #tf.reset_default_graph()
+
+        self.summary_op = tf.summary.merge_all()
+
+        self.tensor_logs_path = "./Tensor_logs/"
+        self.tf_writer = tf.summary.FileWriter(self.tensor_logs_path, graph=tf.get_default_graph())
+
+        self.tensor_save_path = "./Tensor_models/"
+        self.tf_saver = tf.train.Saver()
 
 
-            # ----------------------- Tensorflow  Configs-----------------------------------------------
-            tf.summary.scalar("Cost", self.cost)
-            #tf.summary.scalar("W1", self.parameters["W1"].value())
 
-            self.initializer = tf.global_variables_initializer()
-
-            #tf.reset_default_graph()
-
-            self.summary_op = tf.summary.merge_all()
-
-            self.tensor_logs_path = "./Tensor_logs/"
-            self.tf_writer = tf.summary.FileWriter(self.tensor_logs_path, graph=tf.get_default_graph())
-
-            self.tensor_save_path = "./Tensor_models/"
-            self.tf_saver = tf.train.Saver()
-
-
+    # ------------------------------ TRAINING SET ---------------------------------
     def train(self, verbose=True, save=False):
 
         with tf.Session() as sess:
 
             sess.run(self.initializer)
-
-
-            # ------------------------------ TRAINING SET ----------------------------------
-            training_costs = []
 
             for i in range(self.epochs):
 
@@ -109,7 +105,7 @@ class linear_regression_model(object):
 
 
                 if i % 100 == 0:
-                    self.tf_writer.add_summary(summary)
+                    self.tf_writer.add_summary(summary, i)
                     self.training_costs.append(c)
                     self.decreaseAlpha(i)
                     if verbose: print("Cost after {} epochs: {}".format(i,c))
@@ -126,7 +122,7 @@ class linear_regression_model(object):
             except:
                 sess.run(self.initializer)
 
-        #------------------------------------ TEST SET ----------------------------------
+            #------------------------------------ TEST SET ----------------------------------
             #for i in range(self.m_test):
             x_batch, y_batch = self.getNextBatch("test", 0, self.batch_size)
             test_data = {self.X: x_batch, self.Y: y_batch}
@@ -137,6 +133,12 @@ class linear_regression_model(object):
 
             self.test_costs.append(c)
 
+            total_error, unexplained_error, r_squared_score = sess.run([self.total_error, self.unexplained_error, self.r_squared_score]
+                                                                       ,feed_dict=test_data)
+
+            print("Total error: {}".format(total_error))
+            print("Unexplained error: {}".format(unexplained_error))
+            print("R2 Score: {}".format(r_squared_score))
 
 
 
