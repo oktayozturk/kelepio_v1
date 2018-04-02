@@ -12,14 +12,17 @@ from lin_reg_model import linear_regression_model as lr
 
 
 
-model = lr("bmw", "r 1200 gs")
+model = lr("bajaj", "pulsar ns 200")
 
 
-model.alpha = 0.01
-model.epochs = 1000
+model.alpha = 0.03
+model.epochs = 35000
+model.dropout_threshold = 0.7
+
+
 
 model.train(verbose=True, save=True)
 
-print(model.Y_test.values)
+model.test(show_prices=True)
 
-model.test()
+

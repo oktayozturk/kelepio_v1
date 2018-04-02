@@ -3,6 +3,7 @@
 
 
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from data_management import datamanager as dm
 
@@ -15,7 +16,7 @@ class linear_regression_model(object):
 
     epsilon = 1e-7
     epochs = 10000
-    batch_size = 64
+    batch_size = 256
     dropout_threshold = 1
     alpha = 0.001
     beta = 0.1
@@ -25,10 +26,12 @@ class linear_regression_model(object):
     def __init__(self, bike_brand, bike_model):
 
         # ----------------------- Data Gathering -----------------------------------------------
+        self.brand = bike_brand.replace(" ", "-")
+        self.model = bike_model.replace(" ", "-")
         self.bike_data_manager = dm(bike_brand, bike_model, polynomial_degree=1)
         self.bike_data_manager.clear_uncorrelated_fields()
         self.X_train, self.Y_train, self.X_test, self.Y_test = self.bike_data_manager.splitDataset(0.9)
-
+        self.prefix = (bike_brand + "-" + bike_model)
 
         #----------------------- Model Parameters -----------------------------------------------
 
@@ -41,54 +44,57 @@ class linear_regression_model(object):
 
 
         #-------------------------  MODEL GRAPH -------------------------------------
-        with tf.name_scope("Variables"):
-
+        tf.reset_default_graph()
+        with tf.name_scope("Input_Data"):
             self.X = tf.placeholder(dtype=tf.float32, shape=[self.n_train,None], name="X")
+
+        with tf.name_scope("Labels"):
             self.Y = tf.placeholder(dtype=tf.float32, shape=[self.number_of_output, None], name="Y")
+
+        with tf.name_scope("Parameters"):
             self.parameters = self.initWeights()
 
-        with tf.name_scope("Feed_forward"):
-
+        with tf.name_scope("Predictions"):
             self.Y_ = self.feedForward()
 
         with tf.name_scope("Cost_computation"):
 
-            self.dryLoss = self.computeUnregularizedLoss()
-            self.regularisation = self.compute_L2_regularization()
-            self.cost = tf.reduce_mean(self.dryLoss + self.regularisation)
+            with tf.name_scope("Cost_and_Regularization"):
+                self.dryLoss = self.computeUnregularizedLoss()
+                self.regularisation = self.compute_L2_regularization()
+                self.cost = tf.reduce_mean(self.dryLoss + self.regularisation)
 
-        with tf.name_scope("Optimization"):
 
-            self.optimizer = tf.train.AdamOptimizer(self.alpha)
-            self.train_op = self.optimizer.minimize(self.cost, name="Training_OP")
-            self.training_costs = []
-            self.test_costs = []
+            with tf.name_scope("Optimization"):
+                self.optimizer = tf.train.AdamOptimizer(self.alpha)
+                self.train_op = self.optimizer.minimize(self.cost, name="Training_OP")
+                self.training_costs = []
+                self.test_costs = []
 
         with tf.name_scope("Metrics"):
-
             self.total_error = tf.reduce_sum(tf.square(tf.subtract(self.Y, tf.reduce_mean(self.Y))))
             self.unexplained_error = tf.reduce_sum(tf.square(tf.subtract(self.Y, self.Y_)))
             self.r_squared_score = tf.subtract(1., tf.div(self.unexplained_error, self.total_error))
 
         # ----------------------- Tensorflow  Logs and Configs-----------------------------------------------
         tf.summary.scalar("Cost", self.cost)
-        #tf.summary.scalar("W1", self.parameters["W1"].value())
+        tf.summary.histogram("W1", self.parameters["W1"])
 
         self.initializer = tf.global_variables_initializer()
 
-        #tf.reset_default_graph()
 
         self.summary_op = tf.summary.merge_all()
 
-        self.tensor_logs_path = "./Tensor_logs/"
+        self.tensor_logs_path = self.build_Path("./Tensor_logs/")
         self.tf_writer = tf.summary.FileWriter(self.tensor_logs_path, graph=tf.get_default_graph())
 
-        self.tensor_save_path = "./Tensor_models/"
+        self.tensor_save_path = self.build_Path("./Tensor_models/")
         self.tf_saver = tf.train.Saver()
 
 
 
-    # ------------------------------ TRAINING SET ---------------------------------
+    # ------------------------------ TRAINING AND TEST FUNCS ---------------------------------
+
     def train(self, verbose=True, save=False):
 
         with tf.Session() as sess:
@@ -105,15 +111,16 @@ class linear_regression_model(object):
 
 
                 if i % 100 == 0:
-                    self.tf_writer.add_summary(summary, i)
                     self.training_costs.append(c)
                     self.decreaseAlpha(i)
                     if verbose: print("Cost after {} epochs: {}".format(i,c))
+                    self.tf_writer.add_summary(summary, i)
+
 
             if save: self.tf_saver.save(sess, self.tensor_save_path + "model.ckpt")
 
 
-    def test(self):
+    def test(self, show_prices=False):
 
         with tf.Session() as sess:
 
@@ -123,25 +130,27 @@ class linear_regression_model(object):
                 sess.run(self.initializer)
 
             #------------------------------------ TEST SET ----------------------------------
-            #for i in range(self.m_test):
+
             x_batch, y_batch = self.getNextBatch("test", 0, self.batch_size)
             test_data = {self.X: x_batch, self.Y: y_batch}
 
-            c = sess.run(self.cost, feed_dict=test_data)
-
-            print(sess.run(self.Y_, feed_dict=test_data))
+            c, preds = sess.run([self.cost, self.Y_], feed_dict=test_data)
 
             self.test_costs.append(c)
 
-            total_error, unexplained_error, r_squared_score = sess.run([self.total_error, self.unexplained_error, self.r_squared_score]
-                                                                       ,feed_dict=test_data)
+            r_squared_score = sess.run(self.r_squared_score,feed_dict=test_data)
 
-            print("Total error: {}".format(total_error))
-            print("Unexplained error: {}".format(unexplained_error))
+
+            print("Test cost:{}".format(c))
             print("R2 Score: {}".format(r_squared_score))
 
+            if show_prices:
+                preds = pd.DataFrame({'preds': preds[0]}, index=self.Y_test.keys())
+                results = pd.concat([self.Y_test, preds.T], axis=0, ignore_index=False)
+                print(results)
 
 
+    # ------------------------------ HELPER FUNCS ---------------------------------
 
     def initWeights(self):
 
@@ -154,6 +163,11 @@ class linear_regression_model(object):
 
         return parameters
 
+
+    def build_Path(self, path):
+
+
+        return path
 
     def feedForward(self):
 
