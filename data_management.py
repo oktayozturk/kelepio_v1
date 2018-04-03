@@ -75,7 +75,13 @@ class datamanager:
             return output_df
 
         def normalizeScalarColumns(self):
-            return self.scalar_columns
+            from sklearn import preprocessing
+
+            x_scaled = pd.DataFrame(preprocessing.scale(self.scalar_columns))
+            x_scaled.columns = self.scalar_columns.columns
+
+
+            return x_scaled
 
         def mergeX(self):
 
@@ -116,7 +122,7 @@ class datamanager:
         self.x_categorical = processCategoricalColumns(self).set_index(self.index)
         self.x_bool = self.bool_columns.set_index(self.index)
         self.x_scalar = polynomizeScalarColumns(self)
-        #self.x_scalar = self.normalizeScalarColumns() # unutma bunu yapmayı
+        self.x_scalar = normalizeScalarColumns(self)
 
         self.X = mergeX(self)
 

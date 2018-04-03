@@ -12,13 +12,13 @@ from lin_reg_model import linear_regression_model as lr
 
 
 
-bike = dm("ktm", "200 duke", polynomial_degree=1, logaritmic_prices=True)
+bike = dm("ktm", "200 duke", polynomial_degree=2, logaritmic_prices=True)
 bike.clear_uncorrelated_fields()
 #bike.plotGausianPrices()
 
 # print(bike.dataset["price"].describe())
 # print(bike.deleted_rows)
 
-#print(bike.X.head())
+print(bike.X.head())
 
 bike.PCA_graph(2, show_graph=True)

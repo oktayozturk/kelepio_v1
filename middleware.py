@@ -12,12 +12,12 @@ from lin_reg_model import linear_regression_model as lr
 
 
 
-model = lr("bajaj", "pulsar ns 200")
+model = lr("yamaha", "mt-25")
 
 
 model.alpha = 0.03
-model.epochs = 1000
-model.dropout_threshold = 0.7
+model.epochs = 10000
+model.dropout_threshold = 0.5
 
 
 model.train(verbose=True, save=True)

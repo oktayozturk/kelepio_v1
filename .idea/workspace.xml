@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ae7ccdfa-08dd-466e-b217-8e00d7cf170b" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/CSV/honda-cbf-150.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data_management.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_management.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lin_reg_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/lin_reg_model.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -30,8 +29,8 @@
       <file leaf-file-name="lin_reg_model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lin_reg_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="350">
-              <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
+            <state relative-caret-position="112">
+              <caret line="29" column="49" lean-forward="true" selection-start-line="29" selection-start-column="49" selection-end-line="29" selection-end-column="49" />
             </state>
           </provider>
         </entry>
@@ -39,8 +38,8 @@
       <file leaf-file-name="middleware.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/middleware.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="350">
-              <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+            <state relative-caret-position="224">
+              <caret line="19" column="29" lean-forward="true" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -48,17 +47,18 @@
       <file leaf-file-name="data_management.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data_management.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="116">
-              <caret line="139" column="43" selection-start-line="139" selection-start-column="43" selection-end-line="139" selection-end-column="43" />
+            <state relative-caret-position="-121">
+              <caret line="97" lean-forward="true" selection-start-line="97" selection-end-line="97" />
               <folding>
                 <element signature="n#!!doc" />
                 <element signature="e#454#1269#0" />
                 <element signature="e#481#934#0" />
                 <element signature="e#989#1095#0" />
                 <element signature="e#1162#1754#0" />
-                <element signature="e#1825#1857#0" />
+                <element signature="e#2686#2889#0" />
                 <element signature="e#2755#3057#0" />
                 <element signature="e#5027#5270#0" />
+                <element signature="e#4921#6882#0" />
                 <element signature="e#6853#7187#0" />
                 <element signature="e#6644#6772#0" />
                 <element signature="e#4756#4957#0" />
@@ -79,8 +79,8 @@
       <file leaf-file-name="test.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="142">
-              <caret line="14" column="27" selection-start-line="14" selection-start-column="27" selection-end-line="14" selection-end-column="27" />
+            <state relative-caret-position="322">
+              <caret line="23" column="33" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
             </state>
           </provider>
         </entry>
@@ -276,6 +276,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1360" height="700" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="right" content_ui="combo" id="Project" order="4" visible="true" weight="0.18645358" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32864675" />
@@ -398,9 +399,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -426,9 +428,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -461,9 +464,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -528,9 +532,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -556,9 +561,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -591,9 +597,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -658,9 +665,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -686,9 +694,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -732,9 +741,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -774,9 +784,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -809,9 +820,10 @@
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -869,36 +881,23 @@
     <entry file="file://$PROJECT_DIR$/CSV/honda-cbr-250-r.csv">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/middleware.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test_outputs/test.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/lin_reg_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/data_management.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="139" column="43" selection-start-line="139" selection-start-column="43" selection-end-line="139" selection-end-column="43" />
+        <state relative-caret-position="-121">
+          <caret line="97" lean-forward="true" selection-start-line="97" selection-end-line="97" />
           <folding>
             <element signature="n#!!doc" />
             <element signature="e#454#1269#0" />
             <element signature="e#481#934#0" />
             <element signature="e#989#1095#0" />
             <element signature="e#1162#1754#0" />
-            <element signature="e#1825#1857#0" />
+            <element signature="e#2686#2889#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
+            <element signature="e#4921#6882#0" />
             <element signature="e#6853#7187#0" />
             <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
@@ -915,10 +914,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/middleware.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="19" column="29" lean-forward="true" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lin_reg_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="29" column="49" lean-forward="true" selection-start-line="29" selection-start-column="49" selection-end-line="29" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="14" column="27" selection-start-line="14" selection-start-column="27" selection-end-line="14" selection-end-column="27" />
+        <state relative-caret-position="322">
+          <caret line="23" column="33" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
         </state>
       </provider>
     </entry>

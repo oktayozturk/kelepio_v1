@@ -30,9 +30,9 @@ class linear_regression_model(object):
         self.model = bike_model.replace(" ", "-")
         self.prefix = (bike_brand + "-" + bike_model)
 
-        self.bike_data_manager = dm(bike_brand, bike_model, polynomial_degree=1)
-        self.bike_data_manager.clear_uncorrelated_fields()
-        self.X_train, self.Y_train, self.X_test, self.Y_test = self.bike_data_manager.splitDataset(0.9)
+        self.dataset = dm(bike_brand, bike_model, polynomial_degree=1, logaritmic_prices=True)
+        self.dataset.clear_uncorrelated_fields()
+        self.X_train, self.Y_train, self.X_test, self.Y_test = self.dataset.splitDataset(0.9)
 
 
 
@@ -262,7 +262,7 @@ class linear_regression_model(object):
 
     def shapes(self):
 
-        print("Shape and type of Dataset_raw: {} shaped {}".format(np.shape(self.bike_data_manager.X), type(self.bike_data_manager.X)))
+        print("Shape and type of Dataset_raw: {} shaped {}".format(np.shape(self.dataset.X), type(self.dataset.X)))
         print("Shape and type of X_Train: {} shaped {}".format(np.shape(self.X_train), type(self.X_train)))
         print("Shape and type of Y_Train: {} shaped {}".format(np.shape(self.Y_train), type(self.Y_train)))
         print("Shape and type of X_Test: {} shaped {}".format(np.shape(self.X_test), type(self.X_test)))
