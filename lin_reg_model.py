@@ -25,7 +25,7 @@ class linear_regression_model(object):
 
     def __init__(self, bike_brand, bike_model):
 
-        # ----------------------- Data Gathering -----------------------------------------------
+        # ----------------------- Data Gathering ----------------------------------------------
         self.brand = bike_brand.replace(" ", "-")
         self.model = bike_model.replace(" ", "-")
         self.bike_data_manager = dm(bike_brand, bike_model, polynomial_degree=1)
