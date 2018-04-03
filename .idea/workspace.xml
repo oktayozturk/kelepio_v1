@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ae7ccdfa-08dd-466e-b217-8e00d7cf170b" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/CSV/honda-cbr-250-r.csv" beforeDir="false" afterPath="$PROJECT_DIR$/CSV/honda-cbr-250-r.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tensor_models/bajaj/pulsar-ns-200/model.ckpt.data-00000-of-00001" beforeDir="false" afterPath="$PROJECT_DIR$/Tensor_models/bajaj/pulsar-ns-200/model.ckpt.data-00000-of-00001" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tensor_models/bajaj/pulsar-ns-200/model.ckpt.index" beforeDir="false" afterPath="$PROJECT_DIR$/Tensor_models/bajaj/pulsar-ns-200/model.ckpt.index" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tensor_models/bajaj/pulsar-ns-200/model.ckpt.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Tensor_models/bajaj/pulsar-ns-200/model.ckpt.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/honda-cbf-150.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data_management.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_management.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lin_reg_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/lin_reg_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -34,7 +30,7 @@
       <file leaf-file-name="lin_reg_model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lin_reg_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="518">
+            <state relative-caret-position="350">
               <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
             </state>
           </provider>
@@ -49,11 +45,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="data_management.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="data_management.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data_management.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="201" column="18" lean-forward="true" selection-start-line="201" selection-start-column="18" selection-end-line="201" selection-end-column="18" />
+            <state relative-caret-position="116">
+              <caret line="139" column="43" selection-start-line="139" selection-start-column="43" selection-end-line="139" selection-end-column="43" />
               <folding>
                 <element signature="n#!!doc" />
                 <element signature="e#454#1269#0" />
@@ -63,25 +59,28 @@
                 <element signature="e#1825#1857#0" />
                 <element signature="e#2755#3057#0" />
                 <element signature="e#5027#5270#0" />
-                <element signature="e#4960#6825#0" />
+                <element signature="e#6853#7187#0" />
+                <element signature="e#6644#6772#0" />
                 <element signature="e#4756#4957#0" />
                 <element signature="e#5544#5794#0" />
+                <element signature="e#5833#6320#0" />
                 <element signature="e#8155#8568#0" />
                 <element signature="e#8154#8231#0" />
                 <element signature="e#8317#8571#0" />
                 <element signature="e#8639#8915#0" />
                 <element signature="e#8706#8889#0" />
                 <element signature="e#9147#9433#0" />
+                <element signature="e#10846#11083#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="test.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="44" />
+            <state relative-caret-position="142">
+              <caret line="14" column="27" selection-start-line="14" selection-start-column="27" selection-end-line="14" selection-end-column="27" />
             </state>
           </provider>
         </entry>
@@ -101,8 +100,8 @@
       <list>
         <option value="$PROJECT_DIR$/middleware.py" />
         <option value="$PROJECT_DIR$/lin_reg_model.py" />
-        <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/data_management.py" />
+        <option value="$PROJECT_DIR$/test.py" />
       </list>
     </option>
   </component>
@@ -123,6 +122,11 @@
             <path>
               <item name="kelepio_v1" type="b2602c69:ProjectViewProjectNode" />
               <item name="kelepio_v1" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="kelepio_v1" type="b2602c69:ProjectViewProjectNode" />
+              <item name="kelepio_v1" type="462c0819:PsiDirectoryNode" />
+              <item name="CSV" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="kelepio_v1" type="b2602c69:ProjectViewProjectNode" />
@@ -272,7 +276,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1360" height="700" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="right" content_ui="combo" id="Project" order="4" visible="true" weight="0.18645358" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32864675" />
@@ -398,15 +401,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -423,15 +429,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -455,15 +464,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -519,15 +531,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -544,15 +559,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -576,15 +594,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -640,15 +661,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -665,15 +689,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -708,15 +735,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -747,15 +777,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -779,15 +812,18 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
         </state>
       </provider>
@@ -833,13 +869,6 @@
     <entry file="file://$PROJECT_DIR$/CSV/honda-cbr-250-r.csv">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/lin_reg_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="518">
-          <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/middleware.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="350">
@@ -850,17 +879,17 @@
     <entry file="file://$PROJECT_DIR$/test_outputs/test.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
+    <entry file="file://$PROJECT_DIR$/lin_reg_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="44" />
+        <state relative-caret-position="350">
+          <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/data_management.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="201" column="18" lean-forward="true" selection-start-line="201" selection-start-column="18" selection-end-line="201" selection-end-column="18" />
+        <state relative-caret-position="116">
+          <caret line="139" column="43" selection-start-line="139" selection-start-column="43" selection-end-line="139" selection-end-column="43" />
           <folding>
             <element signature="n#!!doc" />
             <element signature="e#454#1269#0" />
@@ -870,16 +899,26 @@
             <element signature="e#1825#1857#0" />
             <element signature="e#2755#3057#0" />
             <element signature="e#5027#5270#0" />
-            <element signature="e#4960#6825#0" />
+            <element signature="e#6853#7187#0" />
+            <element signature="e#6644#6772#0" />
             <element signature="e#4756#4957#0" />
             <element signature="e#5544#5794#0" />
+            <element signature="e#5833#6320#0" />
             <element signature="e#8155#8568#0" />
             <element signature="e#8154#8231#0" />
             <element signature="e#8317#8571#0" />
             <element signature="e#8639#8915#0" />
             <element signature="e#8706#8889#0" />
             <element signature="e#9147#9433#0" />
+            <element signature="e#10846#11083#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="142">
+          <caret line="14" column="27" selection-start-line="14" selection-start-column="27" selection-end-line="14" selection-end-column="27" />
         </state>
       </provider>
     </entry>

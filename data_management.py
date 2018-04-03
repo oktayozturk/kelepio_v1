@@ -132,39 +132,29 @@ class datamanager:
         print("y_group shape: {}".format(np.shape(self.y_group)))
 
 
-    def show_PCA_graph(self, reduction=2, show_graph=True):
+    def PCA_graph(self, reduction=2, show_graph=True):
 
-        def apply_PCA(reduction):
+        def apply_PCA(X, reduction):
 
-            X = self.X.drop(["price"]).T
-            n,m = np.shape(X)
+            #drop(["price"], axis=1).
+            x_ = X.drop(["price"], axis=1).T
+            n,m = np.shape(x_)
 
             # calculate means vector to calculate scatter matrix
             means_vector = np.zeros([n,1])
 
             for i in range(n):
-                means_vector[i,:] = np.mean(X.iloc[i,:])
+                means_vector[i,:] = np.mean(x_.iloc[i,:])
 
             #calculate scatter matrix to calculate eigen vector and eigen values
             scatter_matrix = np.zeros([n,n])
 
             for i in range(m):
-                scatter_matrix = scatter_matrix + np.dot((X.iloc[:,i].values.reshape(n,1) - means_vector), (X.iloc[:,i].values.reshape(n,1) - means_vector).T)
+                scatter_matrix = scatter_matrix + np.dot((x_.iloc[:,i].values.reshape(n,1) - means_vector), (x_.iloc[:,i].values.reshape(n,1) - means_vector).T)
 
             #calculate eigen vector and eigen values
             eigen_values, eigen_vectors = np.linalg.eig(np.array(scatter_matrix, dtype=float))
 
-            #testing OUTPUT values
-            # for i in range(len(eigen_values)):
-            #
-            #     eigv = eigen_vectors[:, i].reshape(1, n).T
-            #     np.testing.assert_array_almost_equal(scatter_matrix.dot(eigv), eigen_values[i] * eigv,
-            #                                          decimal=6, err_msg='', verbose=True)
-            #
-            # for ev in eigen_vectors:
-            #     np.testing.assert_array_almost_equal(1.0, np.linalg.norm(ev))
-
-            # Make a list of (eigenvalue, eigenvector) tuples
             eig_pairs = [(np.abs(eigen_values[i]), np.abs(eigen_vectors[:, i])) for i in range(len(eigen_values))]
 
             # Sort the (eigenvalue, eigenvector) tuples from high to low
@@ -178,9 +168,9 @@ class datamanager:
             w = np.hstack(tuple(pca_matrix))
 
 
-            return w.T.dot(X)
+            return w.T.dot(x_)
 
-        def draw_PCA_graph_bokeh():
+        def draw_PCA_graph_bokeh(pca_matrix, prices):
             from bokeh.plotting import figure, show, output_file
 
             output_file("test_outputs/test.html")
@@ -190,15 +180,15 @@ class datamanager:
                 p.circle(pca_matrix[0], pca_matrix[1], size=10, color=list(self.y.values), alpha=0.5)
                 show(p)
 
+        def draw_PCA_graph_matplotlib(pca_matrix, prices):
+            import matplotlib.pyplot as plt
 
-        pca_matrix = apply_PCA(reduction)
+            plt.scatter(pca_matrix[0], pca_matrix[1], c=prices)
+            plt.show()
 
+        pca_matrix = apply_PCA(self.X, reduction)
 
-        import matplotlib.pyplot as plt
-
-
-        plt.scatter(pca_matrix[0], pca_matrix[1], c=self.y["price"])
-        plt.show()
+        if show_graph: draw_PCA_graph_matplotlib(pca_matrix, self.y["price"])
 
         return pca_matrix
 
