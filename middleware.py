@@ -12,7 +12,7 @@ from lin_reg_model import linear_regression_model as lr
 
 
 
-model = lr("yamaha", "mt-25")
+model = lr("apachi", "rtr 150")
 
 
 model.alpha = 0.03
