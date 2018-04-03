@@ -28,10 +28,13 @@ class linear_regression_model(object):
         # ----------------------- Data Gathering -----------------------------------------------
         self.brand = bike_brand.replace(" ", "-")
         self.model = bike_model.replace(" ", "-")
+        self.prefix = (bike_brand + "-" + bike_model)
+
         self.bike_data_manager = dm(bike_brand, bike_model, polynomial_degree=1)
         self.bike_data_manager.clear_uncorrelated_fields()
         self.X_train, self.Y_train, self.X_test, self.Y_test = self.bike_data_manager.splitDataset(0.9)
-        self.prefix = (bike_brand + "-" + bike_model)
+
+
 
         #----------------------- Model Parameters -----------------------------------------------
 
