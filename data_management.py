@@ -111,8 +111,9 @@ class datamanager:
             prefix = (self.bike_brand + "-" + self.bike_model).replace(" ", "-")
             self.dataset = GetBikeDataframeFromCSV(prefix)
         except:
-            import scrapper as sc
-            self.dataset = sc.FetchBike(self.bike_brand, self.bike_model)
+            import scrapper
+            sc = scrapper.Scrapper(self.bike_brand, self.bike_model)
+            self.dataset = sc.FetchBikeAds()
 
         self.dataset, self.deleted_rows = clear_dataset_from_extreme_prices(self)
 

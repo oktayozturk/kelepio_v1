@@ -12,7 +12,7 @@ from lin_reg_model import linear_regression_model as lr
 
 
 
-bike = dm("ktm", "200 duke", polynomial_degree=2, logaritmic_prices=True)
+bike = dm("bmw", "c 600 sport", polynomial_degree=2, logaritmic_prices=True)
 bike.clear_uncorrelated_fields()
 #bike.plotGausianPrices()
 
