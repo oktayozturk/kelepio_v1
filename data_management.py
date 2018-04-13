@@ -112,7 +112,7 @@ class datamanager:
             self.dataset = GetBikeDataframeFromCSV(prefix)
         except:
             import scrapper
-            sc = scrapper.Scrapper(self.bike_brand, self.bike_model)
+            sc = scrapper.AdScrapper(self.bike_brand, self.bike_model)
             self.dataset = sc.FetchBikeAds()
 
         self.dataset, self.deleted_rows = clear_dataset_from_extreme_prices(self)

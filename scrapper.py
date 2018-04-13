@@ -8,7 +8,7 @@ from urllib import urlencode as urlencoder
 import tensorflow as tf
 import os
 
-class Scrapper(object):
+class AdScrapper(object):
 
     def __init__(self, brand, model):
         self.brand = brand
@@ -20,7 +20,6 @@ class Scrapper(object):
         df = self.GetBikeDataframeFromWEB()
         self.WriteBikeListToCSV(df)
         return df
-
 
     def GetBikeDataframeFromWEB(self):
 
@@ -43,7 +42,6 @@ class Scrapper(object):
 
         return df
 
-
     def WriteBikeListToCSV(self, dataframe):
         try:
             print(dataframe.dtypes)
@@ -56,7 +54,6 @@ class Scrapper(object):
             print("Prefix: %s" % prefix)
             print("Hata mesajı: %s" % exc)
             raise
-
 
     def GetBikeDatasetFromHTML(self, html):
 
@@ -143,7 +140,6 @@ class Scrapper(object):
 
         return motosiklet_listesi
 
-
     def GetBikeHTML(self, url):
         try:
 
@@ -168,7 +164,6 @@ class Scrapper(object):
             print(exc)
             print("url de bir sıkıntı var herhalde")
 
-
     def GetPagesList(self, url):
 
         html = self.GetBikeHTML(url)
@@ -184,17 +179,14 @@ class Scrapper(object):
 
         return html, next_page
 
-
     def fix_currency(self, bike_price, bike_currency):
         if bike_currency == "€": return float(bike_price) * 5
         elif bike_currency == "$": return float(bike_price) * 4
         else: return bike_price
 
-
     def fix_date_month(self, ad_date):
 
         return ad_date.replace("Ocak",".1.").replace("Şubat",".2.").replace("Mart",".3.").replace("Nisan",".4.").replace("Mayıs",".5.").replace("Haziran",".6.").replace("Temmuz",".7.").replace("Ağustos",".8.").replace("Eylül",".9.").replace("Ekim",".10.").replace("Kasım",".11.").replace("Aralık",".12.").replace(" ",".")
-
 
     def getBikeDetail(self, url):
 
@@ -214,3 +206,38 @@ class Scrapper(object):
 
         return dict
 
+
+class BikeDataScrapper(object):
+
+    def __init__(self, brand, model):
+        self.brand = str(brand).lower()
+        self.model = str(model).lower()
+        self.base_Url = "http://www.motorcyclespecs.co.za/bikes/" + str(self.brand).lower() + ".htm"
+        self.pages = [2001, 2002, 2014]
+
+    def getPageUrls(self):
+        html = self.GetHTML(self.base_Url)
+        scrapper = BeautifulSoup(html, 'html.parser')
+        links = scrapper.find_all("a")
+        for link in links:
+            print(link.get("href"))
+
+
+    def GetHTML(self, url):
+        try:
+
+            user_agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
+            values = {'name': 'Michael',
+                      'location': 'Northampton',
+                      'language': 'English'}
+            headers = {'User-Agent': user_agent}
+
+            data = urlencoder(values)
+            req = urllib2.Request(url, data=data, headers=headers)
+            response = urllib2.urlopen(req)
+            html = response.read()
+            return html
+
+        except Exception as exc:
+            print(exc)
+            print("url de bir sıkıntı var herhalde")
