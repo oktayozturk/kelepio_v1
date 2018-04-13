@@ -16,9 +16,13 @@ bike = dm("ktm", "200 duke", polynomial_degree=2, logaritmic_prices=True)
 bike.clear_uncorrelated_fields()
 #bike.plotGausianPrices()
 
-# print(bike.dataset["price"].describe())
-# print(bike.deleted_rows)
+print(bike.dataset["abs"].describe())
+print(bike.deleted_rows)
 
 print(bike.X.head())
 
-bike.PCA_graph(2, show_graph=True)
+pca_data = bike.PCA_graph(2, show_graph=False)
+
+#print(bike.index)
+
+print(pd.DataFrame(pca_data, columns=bike.dataset["price"]))
