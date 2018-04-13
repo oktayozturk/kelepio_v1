@@ -9,46 +9,12 @@ import tensorflow as tf
 import os
 
 
-def FetchBike(brand, model):
+def FetchBikeAds(brand, model):
 
     prefix = (brand + "-" + model).replace(" ", "-")
-
-    try:
-        return GetBikeDataframeFromCSV(prefix)
-
-    except Exception as exc:
-
-        df = GetBikeDataframeFromWEB(prefix)
-
-        WriteBikeListToCSV(df,prefix)
-
-        return df
-
-
-def FetchAllBikes():
-
-
-    try:
-        print("Mevcut bütün CSV'lerden veriler alınıyor....")
-        return GetAllBikesDataframe_fromCSVs()
-
-    except Exception as exc:
-        print("Verileri alamadım....")
-        print(exc)
-        raise
-
-
-def GetBikeDataframeFromCSV(prefix):
-    try:
-        filename = "CSV/" + prefix + ".csv"  # CSV/bmw-f-650-gs.csv
-        print("CSV dosyasını açılıyor.......:")
-        return pd.read_csv(filename)
-
-    except Exception as exc:
-        print("CSV dosyasını açamadım.......:")
-        print("Prefix: %s" % prefix)
-        print("Hata mesajı: %s" % exc)
-        raise
+    df = GetBikeDataframeFromWEB(prefix)
+    WriteBikeListToCSV(df, prefix)
+    return df
 
 
 def GetBikeDataframeFromWEB(prefix):
@@ -218,24 +184,6 @@ def GetPagesList(url):
             next_page = "https://www.sahibinden.com/" + a["href"]
 
     return html, next_page
-
-
-def GetAllBikesDataframe_fromCSVs():
-
-    path = "CSV/"
-    files = [f for f in os.listdir(path)]
-
-    dataset = pd.DataFrame()
-
-    for file in files:
-        lhs, rhs = file.split("-", 1)
-        df = pd.read_csv(path + file, index_col=0)
-        df.insert(0, "model", rhs.replace(".csv", "").replace("-", ""))
-        df.insert(0, "brand", lhs)
-        dataset = dataset.append(df,ignore_index=True)
-
-
-    return dataset
 
 
 def fix_currency(bike_price, bike_currency):

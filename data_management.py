@@ -13,10 +13,19 @@ class datamanager:
     def __str__(self):
         return "Dataset for Brand: {} and Model: {}".format(self.bike_brand, self.bike_model)
 
+    def __init__(self, bike_brand, bike_model, polynomial_degree=1, logaritmic_prices=True):
 
-    def __init__(self, bike_brand, bike_model, polynomial_degree=1, logaritmic_prices= True):
+        def GetBikeDataframeFromCSV(prefix):
+            try:
+                filename = "CSV/" + prefix + ".csv"  # CSV/bmw-f-650-gs.csv
+                print("CSV dosyasını açılıyor.......:")
+                return pd.read_csv(filename)
 
-        import scrapper as sc
+            except Exception as exc:
+                print("CSV dosyasını açamadım.......:")
+                print("Prefix: %s" % prefix)
+                print("Hata mesajı: %s" % exc)
+                raise
 
         def clear_dataset_from_extreme_prices(self):
 
@@ -95,19 +104,21 @@ class datamanager:
 
             return X
 
-
         self.bike_brand = bike_brand
         self.bike_model = bike_model
         self.polynomial_degree = polynomial_degree
-        self.dataset = sc.FetchBike(self.bike_brand, self.bike_model)
+        try:
+            prefix = (self.bike_brand + "-" + self.bike_model).replace(" ", "-")
+            self.dataset = GetBikeDataframeFromCSV(prefix)
+        except:
+            import scrapper as sc
+            self.dataset = sc.FetchBike(self.bike_brand, self.bike_model)
 
         self.dataset, self.deleted_rows = clear_dataset_from_extreme_prices(self)
-
 
         self.index = self.dataset["bike_id"]
 
         self.y, self.y_group =  extract_prices_and_price_categories(self, number_of_price_groups=self.number_of_price_groups, logaritmic=False)
-
 
         self.unwanted_categorical_columns = ["ad_url", "ad_title", "ad_date"]
         self.categorical_columns = self.dataset.select_dtypes(include=[np.object]).drop(labels=self.unwanted_categorical_columns, axis=1).set_index(self.index)
@@ -118,7 +129,6 @@ class datamanager:
         self.unwanted_bool_columns = []
         self.bool_columns = self.dataset.select_dtypes(include=[np.bool]).drop(labels=self.unwanted_bool_columns, axis=1).set_index(self.index)
 
-
         self.x_categorical = processCategoricalColumns(self).set_index(self.index)
         self.x_bool = self.bool_columns.set_index(self.index)
         self.x_scalar = polynomizeScalarColumns(self)
@@ -126,17 +136,13 @@ class datamanager:
 
         self.X = mergeX(self)
 
-
-
-    #------------------------------------------- HELPER FUNCS ------------------------------------------------
-
+    # ------------------------------------------- HELPER FUNCS ------------------------------------------------
     def shapes(self):
 
         print("Clean dataset shape: {}".format(np.shape(self.dataset)))
         print("X shape: {}".format(np.shape(self.X)))
         print("y shape: {}".format(np.shape(self.y)))
         print("y_group shape: {}".format(np.shape(self.y_group)))
-
 
     def PCA_graph(self, reduction=2, show_graph=True):
 
@@ -198,13 +204,11 @@ class datamanager:
 
         return pca_matrix
 
-
     def clear_uncorrelated_fields(self):
 
         self.corrs = self.X.corr()["price"].dropna(how="all")
         self.uncorrs = self.X.corr()["price"].isna().loc[lambda b: b == True]
         self.X = self.X.drop(labels=list(self.uncorrs.index), axis=1)
-
 
     def splitDataset(self, train_test_split_ratio):
 
@@ -214,7 +218,6 @@ class datamanager:
 
 
         return [x_train.T, y_train.T, x_test.T, y_test.T]
-
 
     def plotGausianPrices(self):
 
@@ -234,7 +237,6 @@ class datamanager:
         plt.title("%s - %s" % (self.bike_brand, self.bike_model))
         plt.show()
 
-
     def get_data_info(self, verbose=False):
         max_value, min_value, mean_value, sigma, m = self.dataset["price"].describe()[
             ["max", "min", "mean", "std", "count"]]
@@ -247,7 +249,6 @@ class datamanager:
             print("Ortalama fiyat: {} TL".format(mean_value))
 
         return [max_value, min_value, mean_value, sigma, m]
-
 
 
     @staticmethod
