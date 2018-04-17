@@ -210,16 +210,20 @@ class AdScrapper(object):
 class BikeDataScrapper(object):
 
     def __init__(self, brand, model):
-        self.brand = str(brand).lower()
-        self.model = str(model).lower()
-        self.base_Url = "http://www.motorcyclespecs.co.za/bikes/" + str(self.brand).lower() + ".htm"
+        self.brand = str(brand)
+        self.model = str(model)
+        self.base_Url = "http://www.motorcyclespecs.co.za/bikes/" + str(self.brand) + ".htm"
         self.pages = [2001, 2002, 2014]
 
     def getPageUrls(self):
+        import re
         html = self.GetHTML(self.base_Url)
         scrapper = BeautifulSoup(html, 'html.parser')
-        links = scrapper.find_all("a")
+        #links = scrapper.find_all("a")
+        links = scrapper.find_all(href=re.compile("model"))
+        #links = scrapper.find_all("a", string=re.compile("Next"))
         for link in links:
+            print(' '.join(link.get_text(strip=True).split()))
             print(link.get("href"))
 
 

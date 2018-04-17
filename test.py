@@ -9,7 +9,9 @@ import tensorflow as tf
 from data_management import datamanager as dm
 from lin_reg_model import linear_regression_model as lr
 
-sc = BikeDataScrapper("bmw", "c 600 sport")
+sc = BikeDataScrapper("KTM", "200 duke")
+
+print(sc.base_Url)
 
 print(sc.getPageUrls())
 
