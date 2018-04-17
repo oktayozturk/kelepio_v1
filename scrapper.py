@@ -209,25 +209,64 @@ class AdScrapper(object):
 
 class BikeDataScrapper(object):
 
-    def __init__(self, brand, model):
+    def __init__(self, brand, model=""):
         self.brand = str(brand)
         self.model = str(model)
         self.base_Url = "http://www.motorcyclespecs.co.za/bikes/" + str(self.brand) + ".htm"
-        self.pages = [2001, 2002, 2014]
+        self.pages = {}
+        self.detail_pages = {}
 
-    def getPageUrls(self):
+    def load_Main_Pages(self):
+        self.pages = self.get_BikeSpec_Pages()
+
+    def load_Detail_Pages(self):
+        for main_page_url, idx in self.pages.items():
+            detail_page_urls = self.get_Detail_Page_Urls(main_page_url)
+            for detail_page_url, model in detail_page_urls.items():
+                self.detail_pages[detail_page_url] = model
+
+    def get_BikeSpec(self, index):
         import re
-        html = self.GetHTML(self.base_Url)
+        url = self.detail_pages.keys()[index]
+        print(self.detail_pages.values()[index])
+        html = self.GetHTML(url)
         scrapper = BeautifulSoup(html, 'html.parser')
-        #links = scrapper.find_all("a")
+        # print(scrapper.prettify())
+        #links = scrapper.find_all("td", href=re.compile("model"))
+
+
+    def get_Detail_Page_Urls(self, url):
+        import re
+        html = self.GetHTML(url)
+        scrapper = BeautifulSoup(html, 'html.parser')
         links = scrapper.find_all(href=re.compile("model"))
-        #links = scrapper.find_all("a", string=re.compile("Next"))
+        bike_spec_urls = {}
         for link in links:
-            print(' '.join(link.get_text(strip=True).split()))
-            print(link.get("href"))
+            bike_spec_urls[unicode(link.get("href")).replace("../", "http://www.motorcyclespecs.co.za/")] = unicode(' '.join(link.get_text(strip=True).split()))
+            # print(' '.join(link.get_text(strip=True).split()))
+            # print(link.get("href"))
+        return bike_spec_urls
 
+    def get_BikeSpec_Pages(self):
+        import re
+        current_url = self.base_Url
+        bike_specs_pages = {current_url: 0}
+        while current_url:
+            html = self.GetHTML(current_url)
+            scrapper = BeautifulSoup(html, 'html.parser')
+            links = scrapper.find_all("a", string=re.compile("Next"))
+            current_url = None
+            for i, link in enumerate(links):
+                current_url = "http://www.motorcyclespecs.co.za/bikes/" + unicode(link.get("href"))
+                bike_specs_pages[current_url] = len(bike_specs_pages)-1
+                # current_url = link.get("href")
+                # print(' '.join(link.get_text(strip=True).split()))
+                # print(link.get("href"))
 
-    def GetHTML(self, url):
+        return bike_specs_pages
+
+    @staticmethod
+    def GetHTML(url):
         try:
 
             user_agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'

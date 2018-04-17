@@ -9,11 +9,14 @@ import tensorflow as tf
 from data_management import datamanager as dm
 from lin_reg_model import linear_regression_model as lr
 
-sc = BikeDataScrapper("KTM", "200 duke")
+sc = BikeDataScrapper("Bajaj")
 
 print(sc.base_Url)
+sc.load_Main_Pages()
+sc.load_Detail_Pages()
+#print(sc.detail_pages)
 
-print(sc.getPageUrls())
+sc.get_BikeSpec(index=0)
 
 
 # bike = dm("bmw", "c 600 sport", polynomial_degree=2, logaritmic_prices=True)
