@@ -232,7 +232,9 @@ class BikeDataScrapper(object):
         html = self.GetHTML(url)
         scrapper = BeautifulSoup(html, 'html.parser')
         # print(scrapper.prettify())
-        #links = scrapper.find_all("td", href=re.compile("model"))
+        tds = scrapper.find_all("td")
+        for td in tds:
+            print(td)
 
 
     def get_Detail_Page_Urls(self, url):
