@@ -8,6 +8,7 @@ from urllib import urlencode as urlencoder
 import tensorflow as tf
 import os
 
+
 class AdScrapper(object):
 
     def __init__(self, brand, model):
@@ -227,14 +228,29 @@ class BikeDataScrapper(object):
 
     def get_BikeSpec(self, index):
         import re
+        from io import StringIO
+        from lxml import etree
+        from lxml import html as scrap
+        from lxml.etree import Element, ElementTree
+        from lxml.html.clean import clean_html, Cleaner
+
+
         url = self.detail_pages.keys()[index]
         print(self.detail_pages.values()[index])
-        html = self.GetHTML(url)
-        scrapper = BeautifulSoup(html, 'html.parser')
-        # print(scrapper.prettify())
-        tds = scrapper.find_all("td")
+        html_cleaner = Cleaner(scripts=True, javascript=True, page_structure=True, style=True, inline_style=True, meta=True, links=True, forms=True, annoying_tags=True, remove_unknown_tags=True)
+        html = html_cleaner.clean_html(self.GetHTML(url))
+        parser = etree.HTMLParser(remove_blank_text=True, remove_comments=True, recover=True)
+        # root = etree.ElementTree(etree.fromstring(html, parser=parser, base_url=url))
+        root = BeautifulSoup(html, 'html.parser')
+        # etree._ElementTree
+        # etree._Element.findtext()
+        tds = root.find_all("td")
+
         for td in tds:
-            print(td)
+            for tag in td(['a', 'input']):
+                tag.decompose()
+
+            print(repr(td.get_text().strip()))
 
 
     def get_Detail_Page_Urls(self, url):
