@@ -210,28 +210,86 @@ class AdScrapper(object):
 
 class BikeDataScrapper(object):
 
-    def __init__(self, brand, model=""):
-        self.brand = str(brand)
-        self.model = str(model)
-        self.base_Url = "http://www.motorcyclespecs.co.za/bikes/" + str(self.brand) + ".htm"
+    def __init__(self, brand="", model=""):
+
+        self.base_Url = "http://www.motorcyclespecs.co.za"
+        self.brands = {}
+        self.load_brands()
+
+        self.brand = ""
+        if str(brand): self.set_brand(brand)
+
         self.brand_pages = {}
+        if str(brand): self.load_brand_pages()
+
         self.model_page_urls = {}
+        if str(brand): self.load_model_detail_pages()
+
+        self.model = ""
+        if str(model): self.set_model(model)
+
         self.model_specs = {}
 
-    def load_model_pages(self):
+
+    def ls_models(self):
+        assert len(self.model_page_urls) > 0, "Models could't find: Load models first...."
+        for k, v in self.model_page_urls.items():
+            print(v + "- {}".format(k))
+
+
+    def set_model(self, model_name):
+        assert isinstance(model_name, basestring), "Model adı gelmedi..."
+        value = '_'.join(str(model_name).lower().strip().split())
+        assert value in self.model_page_urls.values(), "Model adı listede yok...."
+        self.model = model_name
+
+    def ls_brands(self):
+        assert len(self.brands) > 0, "Brands could't find: Load brands first...."
+        for k, v in self.brands.items():
+            print(k + " - {}".format(v))
+
+
+    def set_brand(self, brand_name):
+        key = '_'.join(str(brand_name).lower().strip().split())
+        if key in self.brands:
+            self.brand = brand_name
+            self.base_Url = self.brands[key]
+
+        assert self.base_Url != "http://www.motorcyclespecs.co.za", "Bu modeli listede bulamadım..."
+
+
+
+    def load_brands(self):
+        from lxml.html.clean import Cleaner
+        print("Loading brands.....")
+        url = self.base_Url
+        html_cleaner = Cleaner(scripts=True, javascript=True, page_structure=True, style=True, inline_style=True, meta=True, links=False, forms=True, annoying_tags=True, remove_unknown_tags=True)
+        html = html_cleaner.clean_html(self.fetch_HTML(url))
+        root = BeautifulSoup(html, 'html.parser')
+        hyperlinks = root.find_all("a")
+        for link in hyperlinks:
+            href = link.get("href")
+            if "/bikes/" in href:
+                feat_key = '_'.join(link.get_text().lower().strip().split())
+                self.brands[feat_key] = href.replace("../..", "http://www.motorcyclespecs.co.za")
+
+        assert len(self.brands) > 0, "Markalar yüklenirken bir sıkıntı oldu herhalde..."
+        print("{} Brands loaded........".format(len(self.brands)))
+
+    def load_brand_pages(self):
         self.brand_pages = self.scrap_brand_pages()
 
-    def load_detail_pages(self):
+    def load_model_detail_pages(self):
         for main_page_url, idx in self.brand_pages.items():
             detail_page_urls = self.scrap_model_page_urls(main_page_url)
             for detail_page_url, model in detail_page_urls.items():
                 self.model_page_urls[detail_page_url] = model
 
-    def load_specs(self, index):
+    def load_model_specs(self, model_index):
         from lxml.html.clean import Cleaner
 
-        url = self.model_page_urls.keys()[index]
-        print(self.model_page_urls.values()[index])
+        print("{} model için teknik detaylar yükleniyor".format(self.model_page_urls.values()[model_index]))
+        url = self.model_page_urls.keys()[model_index]
         html_cleaner = Cleaner(scripts=True, javascript=True, page_structure=True, style=True, inline_style=True, meta=True, links=True, forms=True, annoying_tags=True, remove_unknown_tags=True)
         html = html_cleaner.clean_html(self.fetch_HTML(url))
         root = BeautifulSoup(html, 'html.parser')
@@ -251,7 +309,7 @@ class BikeDataScrapper(object):
             feat_key = '_'.join(feats[i].lower().strip().split())
             self.model_specs[feat_key] = feats[i + 1]
 
-        #print(self.bike_specs)
+        print("Modelin teknik bilgileri yüklendi.")
 
     def scrap_model_page_urls(self, url):
         import re
