@@ -214,48 +214,48 @@ class BikeDataScrapper(object):
         self.brand = str(brand)
         self.model = str(model)
         self.base_Url = "http://www.motorcyclespecs.co.za/bikes/" + str(self.brand) + ".htm"
-        self.pages = {}
-        self.detail_pages = {}
+        self.brand_pages = {}
+        self.model_page_urls = {}
+        self.model_specs = {}
 
-    def load_Main_Pages(self):
-        self.pages = self.get_BikeSpec_Pages()
+    def load_model_pages(self):
+        self.brand_pages = self.scrap_brand_pages()
 
-    def load_Detail_Pages(self):
-        for main_page_url, idx in self.pages.items():
-            detail_page_urls = self.get_Detail_Page_Urls(main_page_url)
+    def load_detail_pages(self):
+        for main_page_url, idx in self.brand_pages.items():
+            detail_page_urls = self.scrap_model_page_urls(main_page_url)
             for detail_page_url, model in detail_page_urls.items():
-                self.detail_pages[detail_page_url] = model
+                self.model_page_urls[detail_page_url] = model
 
-    def get_BikeSpec(self, index):
-        import re
-        from io import StringIO
-        from lxml import etree
-        from lxml import html as scrap
-        from lxml.etree import Element, ElementTree
-        from lxml.html.clean import clean_html, Cleaner
+    def load_specs(self, index):
+        from lxml.html.clean import Cleaner
 
-
-        url = self.detail_pages.keys()[index]
-        print(self.detail_pages.values()[index])
+        url = self.model_page_urls.keys()[index]
+        print(self.model_page_urls.values()[index])
         html_cleaner = Cleaner(scripts=True, javascript=True, page_structure=True, style=True, inline_style=True, meta=True, links=True, forms=True, annoying_tags=True, remove_unknown_tags=True)
-        html = html_cleaner.clean_html(self.GetHTML(url))
-        parser = etree.HTMLParser(remove_blank_text=True, remove_comments=True, recover=True)
-        # root = etree.ElementTree(etree.fromstring(html, parser=parser, base_url=url))
+        html = html_cleaner.clean_html(self.fetch_HTML(url))
         root = BeautifulSoup(html, 'html.parser')
-        # etree._ElementTree
-        # etree._Element.findtext()
         tds = root.find_all("td")
 
-        for td in tds:
+        feats = []
+        for idx, td in enumerate(tds):
             for tag in td(['a', 'input']):
+                #  print(tag.get("class")) # Gereksiz tagleri siliyoruz !! Önemli!!
                 tag.decompose()
 
-            print(repr(td.get_text().strip()))
+            feat = td.get_text().strip().replace("\r", "").replace("\n", "").replace("\t", " ").replace(" / ", " | ")
+            if feat and len(feat) < 300:
+                feats.append(feat)
 
+        for i in range(0, len(feats)-1, 2):
+            feat_key = '_'.join(feats[i].lower().strip().split())
+            self.model_specs[feat_key] = feats[i + 1]
 
-    def get_Detail_Page_Urls(self, url):
+        #print(self.bike_specs)
+
+    def scrap_model_page_urls(self, url):
         import re
-        html = self.GetHTML(url)
+        html = self.fetch_HTML(url)
         scrapper = BeautifulSoup(html, 'html.parser')
         links = scrapper.find_all(href=re.compile("model"))
         bike_spec_urls = {}
@@ -265,12 +265,12 @@ class BikeDataScrapper(object):
             # print(link.get("href"))
         return bike_spec_urls
 
-    def get_BikeSpec_Pages(self):
+    def scrap_brand_pages(self):
         import re
         current_url = self.base_Url
         bike_specs_pages = {current_url: 0}
         while current_url:
-            html = self.GetHTML(current_url)
+            html = self.fetch_HTML(current_url)
             scrapper = BeautifulSoup(html, 'html.parser')
             links = scrapper.find_all("a", string=re.compile("Next"))
             current_url = None
@@ -284,7 +284,7 @@ class BikeDataScrapper(object):
         return bike_specs_pages
 
     @staticmethod
-    def GetHTML(url):
+    def fetch_HTML(url):
         try:
 
             user_agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'

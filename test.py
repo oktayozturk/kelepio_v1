@@ -12,11 +12,12 @@ from lin_reg_model import linear_regression_model as lr
 sc = BikeDataScrapper("Bajaj")
 
 print(sc.base_Url)
-sc.load_Main_Pages()
-sc.load_Detail_Pages()
+sc.load_model_pages()
+sc.load_detail_pages()
 #print(sc.detail_pages)
 
-sc.get_BikeSpec(index=0)
+sc.load_specs(index=5)
+print(sc.model_specs)
 
 
 # bike = dm("bmw", "c 600 sport", polynomial_degree=2, logaritmic_prices=True)
