@@ -9,9 +9,16 @@ import tensorflow as tf
 from data_management import datamanager as dm
 from lin_reg_model import linear_regression_model as lr
 
-sc = BikeDataScrapper("ktm")
+sc = BikeDataScrapper("bajaj")
 
-sc.ls_models()
+sc.set_model_by_index(9)
+sc.load_model_specs(1)
+
+
+#sc.load_model_specs(model_index=0)
+#print(sc.model_specs)
+
+#sc.search_models("150")
 
 # sc.load_brand_pages()
 # print(sc.brand_pages)

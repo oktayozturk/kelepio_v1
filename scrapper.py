@@ -222,26 +222,57 @@ class BikeDataScrapper(object):
         self.brand_pages = {}
         if str(brand): self.load_brand_pages()
 
+        self.search_results = []
+
         self.model_page_urls = {}
-        if str(brand): self.load_model_detail_pages()
+        if str(brand):
+            self.load_model_detail_pages()
+            self.search_models()
 
         self.model = ""
-        if str(model): self.set_model(model)
-
         self.model_specs = {}
+        self.model_images = []
+
+
+
+
+    def search_models(self, model_name=""):
+        import re
+
+        lookup = unicode('_'.join(model_name.lower().strip().split()))
+        self.search_results = []
+
+        for key in self.model_page_urls.keys():
+            if re.search(lookup, unicode('_'.join(key.lower().strip().split()))): self.search_results.append(key)
+
+        print("Found {} models.....".format(len(self.search_results)))
+
+        for idx, model in enumerate(self.search_results):
+            print("({})- {}".format(idx, model))
 
 
     def ls_models(self):
         assert len(self.model_page_urls) > 0, "Models could't find: Load models first...."
         for k, v in self.model_page_urls.items():
-            print(v + "- {}".format(k))
+            print("{} :".format(repr(k)))
+            for i in list(v):
+                print(i)
 
 
-    def set_model(self, model_name):
+    def set_model_by_name(self, model_name):
+
         assert isinstance(model_name, basestring), "Model adı gelmedi..."
         value = '_'.join(str(model_name).lower().strip().split())
-        assert value in self.model_page_urls.values(), "Model adı listede yok...."
+        assert value in self.model_page_urls.keys(), "Model adı listede yok...."
         self.model = model_name
+
+    def set_model_by_index(self, model_index):
+        assert model_index < len(self.search_results), "Belirtilen index Search Resultların arasında yok...."
+        self.model = self.search_results[model_index]
+        print("Seçilen model : {}".format(self.model))
+        print("{} adet varyasyon bulundu".format(len(self.model_page_urls[self.model])))
+        for idx, link in enumerate(self.model_page_urls[self.model]):
+            print("({}) - {}".format(idx, link))
 
     def ls_brands(self):
         assert len(self.brands) > 0, "Brands could't find: Load brands first...."
@@ -256,7 +287,6 @@ class BikeDataScrapper(object):
             self.base_Url = self.brands[key]
 
         assert self.base_Url != "http://www.motorcyclespecs.co.za", "Bu modeli listede bulamadım..."
-
 
 
     def load_brands(self):
@@ -276,8 +306,10 @@ class BikeDataScrapper(object):
         assert len(self.brands) > 0, "Markalar yüklenirken bir sıkıntı oldu herhalde..."
         print("{} Brands loaded........".format(len(self.brands)))
 
+
     def load_brand_pages(self):
         self.brand_pages = self.scrap_brand_pages()
+
 
     def load_model_detail_pages(self):
         for main_page_url, idx in self.brand_pages.items():
@@ -285,11 +317,12 @@ class BikeDataScrapper(object):
             for detail_page_url, model in detail_page_urls.items():
                 self.model_page_urls[detail_page_url] = model
 
-    def load_model_specs(self, model_index):
+
+    def load_model_specs(self, model_index=0):
         from lxml.html.clean import Cleaner
 
-        print("{} model için teknik detaylar yükleniyor".format(self.model_page_urls.values()[model_index]))
-        url = self.model_page_urls.keys()[model_index]
+        print("{} modeli için teknik detaylar yükleniyor".format(self.model))
+        url = self.model_page_urls[self.model][model_index]
         html_cleaner = Cleaner(scripts=True, javascript=True, page_structure=True, style=True, inline_style=True, meta=True, links=True, forms=True, annoying_tags=True, remove_unknown_tags=True)
         html = html_cleaner.clean_html(self.fetch_HTML(url))
         root = BeautifulSoup(html, 'html.parser')
@@ -309,7 +342,17 @@ class BikeDataScrapper(object):
             feat_key = '_'.join(feats[i].lower().strip().split())
             self.model_specs[feat_key] = feats[i + 1]
 
-        print("Modelin teknik bilgileri yüklendi.")
+        self.model_images = []
+        imgs = root.find_all("img")
+
+        for img in imgs:
+            if "/Gallery/" in img.get("src"): self.model_images.append(
+                str(img.get("src")).replace("../..", "http://www.motorcyclespecs.co.za"))
+
+        print("Modelin teknik bilgileri ve imajları yüklendi.")
+
+
+
 
     def scrap_model_page_urls(self, url):
         import re
@@ -318,9 +361,16 @@ class BikeDataScrapper(object):
         links = scrapper.find_all(href=re.compile("model"))
         bike_spec_urls = {}
         for link in links:
-            bike_spec_urls[unicode(link.get("href")).replace("../", "http://www.motorcyclespecs.co.za/")] = unicode(' '.join(link.get_text(strip=True).split()))
-            # print(' '.join(link.get_text(strip=True).split()))
-            # print(link.get("href"))
+            url = unicode(link.get("href")).replace("../", "http://www.motorcyclespecs.co.za/")
+            bike_model = unicode(' '.join(link.get_text(strip=True).split()))
+            if bike_model not in bike_spec_urls:
+                bike_spec_urls[bike_model] = [url]
+            else:
+                bike_spec_urls[bike_model].append(url)
+
+            # print(bike_spec_urls[bike_model])
+            # bike_spec_urls[url] = bike_model
+
         return bike_spec_urls
 
     def scrap_brand_pages(self):
