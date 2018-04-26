@@ -2,10 +2,9 @@
 # !/usr/bin/python
 
 import pandas as pd
-from bs4 import BeautifulSoup, NavigableString, Tag, element
+from bs4 import BeautifulSoup, element
 import urllib2
 from urllib import urlencode as urlencoder
-import tensorflow as tf
 import os
 
 
@@ -45,7 +44,6 @@ class AdScrapper(object):
 
     def WriteBikeListToCSV(self, dataframe):
         try:
-            print(dataframe.dtypes)
             print("Veriler CSV dosyasına yazılıyor............")
             dataframe.to_csv(path_or_buf="CSV/" + self.prefix + ".csv", encoding="utf-8", index=False)
             print("Veriler CSV dosyasına yazılması işi bitti............")
@@ -210,52 +208,74 @@ class AdScrapper(object):
 
 class BikeDataScrapper(object):
 
-    def __init__(self, brand="", model=""):
+    def __init__(self, brand=""):
 
         self.base_Url = "http://www.motorcyclespecs.co.za"
         self.brands = {}
         self.load_brands()
-
         self.brand = ""
-        if str(brand): self.set_brand(brand)
-
         self.brand_pages = {}
-        if str(brand): self.load_brand_pages()
+        self.model_search_results = []
+        self.model_urls = {}
+        self.model = ""
+        self.model_specs = []
+        self.model_images = []
 
-        self.search_results = []
+        if str(brand):
+            self.set_brand_by_name(brand)
 
-        self.model_page_urls = {}
         if str(brand):
             self.load_model_detail_pages()
             self.search_models()
 
-        self.model = ""
-        self.model_specs = {}
-        self.model_images = []
+    def write_specs_to_csv(self):
+        assert self.model_specs, "Model specleri yüklenmemiş......"
+        keys = dict(self.model_specs[0]).keys()
 
+        #Find different columns in diferent bke models
+        for i in range(len(self.model_specs)):
+            diff = set(dict(self.model_specs[i]).keys()) - set(keys)
+            if diff:
+                print("Added columns : {}".format(list(diff)))
+                keys.append(list(diff)[0])
 
+        # Merge columns and values into DF
+        df = pd.DataFrame(columns=keys)
+        for i, model in enumerate(self.model_specs):
+            df = df.append(pd.Series(dict(model)), ignore_index=True)
 
+        # Write merged specs into CSV
+        assert len(df) > 0, "Bike spec'leri yazacağım ama hiç spec gelmemiş..."
+        import os
+        path = "Specs/{}/{}/".format(self.searchable_text(self.brand), self.searchable_text(self.model))
+        if not os.path.exists(path):
+            os.makedirs(path + "pics")
+        df.to_csv(path_or_buf=path+"specs.csv", encoding="utf-8", index=False)
+
+    @staticmethod
+    def searchable_text(text):
+        return unicode('_'.join(str(text).lower().strip().split()))
 
     def search_models(self, model_name=""):
         import re
 
         lookup = unicode('_'.join(model_name.lower().strip().split()))
-        self.search_results = []
+        self.model_search_results = []
 
-        for key in self.model_page_urls.keys():
-            if re.search(lookup, unicode('_'.join(key.lower().strip().split()))): self.search_results.append(key)
+        for key in self.model_urls.keys():
+            if re.search(lookup, unicode('_'.join(key.lower().strip().split()))): self.model_search_results.append(key)
 
-        print("Found {} models.....".format(len(self.search_results)))
+        print("Found {} models.....".format(len(self.model_search_results)))
 
-        for idx, model in enumerate(self.search_results):
-            print("({})- {}".format(idx, model))
+        for idx, model in enumerate(self.model_search_results):
+            print("({})- {}".format(idx, repr(model)))
 
 
     def ls_models(self):
-        assert len(self.model_page_urls) > 0, "Models could't find: Load models first...."
-        for k, v in self.model_page_urls.items():
-            print("{} :".format(repr(k)))
-            for i in list(v):
+        assert len(self.model_urls) > 0, "Models could't find: Load models first...."
+        for idx, item in enumerate(self.model_urls.items()):
+            print("({}) - {} :".format(idx, repr(item[0])))
+            for i in list(item[1]):
                 print(i)
 
 
@@ -263,24 +283,37 @@ class BikeDataScrapper(object):
 
         assert isinstance(model_name, basestring), "Model adı gelmedi..."
         value = '_'.join(str(model_name).lower().strip().split())
-        assert value in self.model_page_urls.keys(), "Model adı listede yok...."
+        assert value in self.model_urls.keys(), "Model adı listede yok...."
         self.model = model_name
 
-    def set_model_by_index(self, model_index):
-        assert model_index < len(self.search_results), "Belirtilen index Search Resultların arasında yok...."
-        self.model = self.search_results[model_index]
+
+    def set_model_by_index(self, model_index=0):
+        assert model_index < len(self.model_search_results), "Belirtilen index Search Resultların arasında yok...."
+        self.model = self.model_search_results[model_index]
         print("Seçilen model : {}".format(self.model))
-        print("{} adet varyasyon bulundu".format(len(self.model_page_urls[self.model])))
-        for idx, link in enumerate(self.model_page_urls[self.model]):
+        print("{} adet varyasyon bulundu".format(len(self.model_urls[self.model])))
+        for idx, link in enumerate(self.model_urls[self.model]):
             print("({}) - {}".format(idx, link))
+
 
     def ls_brands(self):
         assert len(self.brands) > 0, "Brands could't find: Load brands first...."
-        for k, v in self.brands.items():
-            print(k + " - {}".format(v))
+        for idx, k in enumerate(self.brands.items()):
+            print("({}) - {} - {}".format(idx, repr(k[0]), k[1]))
 
 
-    def set_brand(self, brand_name):
+    def set_brand_by_index(self, brand_index=0):
+        assert brand_index < len(self.brands), "Belirtilen index brand'lerin içinde yok...."
+        self.brand = self.brands.keys()[brand_index]
+        self.base_Url = self.brands.values()[brand_index]
+        print("Seçilen marka : {}".format(self.brand))
+        self.load_brand_pages()
+        self.load_model_detail_pages()
+        self.search_models()
+        print("{} adet model bulundu".format(len(self.model_urls)))
+
+
+    def set_brand_by_name(self, brand_name):
         key = '_'.join(str(brand_name).lower().strip().split())
         if key in self.brands:
             self.brand = brand_name
@@ -315,32 +348,37 @@ class BikeDataScrapper(object):
         for main_page_url, idx in self.brand_pages.items():
             detail_page_urls = self.scrap_model_page_urls(main_page_url)
             for detail_page_url, model in detail_page_urls.items():
-                self.model_page_urls[detail_page_url] = model
+                self.model_urls[detail_page_url] = model
 
 
-    def load_model_specs(self, model_index=0):
+    def load_model_specs(self):
         from lxml.html.clean import Cleaner
+        assert self.model, "Model seçmemeişsin ki neyi yükleyeyim...."
 
         print("{} modeli için teknik detaylar yükleniyor".format(self.model))
-        url = self.model_page_urls[self.model][model_index]
+        urls = self.model_urls[self.model]
         html_cleaner = Cleaner(scripts=True, javascript=True, page_structure=True, style=True, inline_style=True, meta=True, links=True, forms=True, annoying_tags=True, remove_unknown_tags=True)
-        html = html_cleaner.clean_html(self.fetch_HTML(url))
-        root = BeautifulSoup(html, 'html.parser')
-        tds = root.find_all("td")
+        for url in urls:
+            html = html_cleaner.clean_html(self.fetch_HTML(url))
+            root = BeautifulSoup(html, 'html.parser')
+            tds = root.find_all("td")
 
-        feats = []
-        for idx, td in enumerate(tds):
-            for tag in td(['a', 'input']):
-                #  print(tag.get("class")) # Gereksiz tagleri siliyoruz !! Önemli!!
-                tag.decompose()
+            feats = []
+            for idx, td in enumerate(tds):
+                for tag in td(['a', 'input']):
+                    #  print(tag.get("class")) # Gereksiz tagleri siliyoruz !! Önemli!!
+                    tag.decompose()
 
-            feat = td.get_text().strip().replace("\r", "").replace("\n", "").replace("\t", " ").replace(" / ", " | ")
-            if feat and len(feat) < 300:
-                feats.append(feat)
+                feat = td.get_text().strip().replace("\r", "").replace("\n", "").replace("\t", " ").replace(" / ", " | ")
+                if feat and len(feat) < 300:
+                    feats.append(feat)
 
-        for i in range(0, len(feats)-1, 2):
-            feat_key = '_'.join(feats[i].lower().strip().split())
-            self.model_specs[feat_key] = feats[i + 1]
+            model_specs = {}
+            for i in range(0, len(feats)-1, 2):
+                feat_key = '_'.join(feats[i].lower().strip().split())
+                model_specs[feat_key] = feats[i + 1]
+
+            self.model_specs.append(model_specs)
 
         self.model_images = []
         imgs = root.find_all("img")
@@ -350,8 +388,6 @@ class BikeDataScrapper(object):
                 str(img.get("src")).replace("../..", "http://www.motorcyclespecs.co.za"))
 
         print("Modelin teknik bilgileri ve imajları yüklendi.")
-
-
 
 
     def scrap_model_page_urls(self, url):
@@ -372,6 +408,7 @@ class BikeDataScrapper(object):
             # bike_spec_urls[url] = bike_model
 
         return bike_spec_urls
+
 
     def scrap_brand_pages(self):
         import re
